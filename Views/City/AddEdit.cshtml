@@ -1,0 +1,96 @@
+﻿@model ActivitiesManagement.Models.City
+@{
+    ViewData["Title"] = Model.Id > 0 ? "Edit City" : "Add City";
+    var countries = ViewBag.CountryList as List<ActivitiesManagement.Models.Country>;
+    var states = ViewBag.StateList as List<ActivitiesManagement.Models.State>;
+}
+
+<div class="d-flex justify-content-between align-items-center mb-2">
+    <div>
+        <h4 class="fw-bold mb-0">@(Model.Id > 0 ? "EDIT CITY" : "ADD CITY")</h4>
+        <p class="text-muted">Dashboard / City / @(Model.Id > 0 ? "Edit City" : "Add City")</p>
+    </div>
+    <a asp-action="Index" class="btn btn-primary">BACK</a>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        <form asp-action="AddEdit" method="post">
+            <input type="hidden" asp-for="Id" />
+
+            <div class="row mb-3">
+                <div class="col-md-4">
+                    <label class="form-label">Country <span class="text-danger">*</span></label>
+                    <select asp-for="CountryId" id="ddlCountry" class="form-select" required>
+                        <option value="">Select Country</option>
+                        @foreach (var c in countries)
+                        {
+                            <option value="@c.ID">@c.CountryName</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">State <span class="text-danger">*</span></label>
+                    <select asp-for="StateId" id="ddlState" class="form-select" required>
+                        <option value="">Select State</option>
+                        @if (states != null)
+                        {
+                            foreach (var s in states)
+                            {
+                                <option value="@s.ID">@s.StateName</option>
+                            }
+                        }
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">City Name <span class="text-danger">*</span></label>
+                    <input asp-for="CityName" class="form-control" placeholder="Enter City" required />
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-4">
+                    <label class="form-label">Short Code</label>
+                    <input asp-for="ShortCode" class="form-control" placeholder="Enter Short Code" />
+                </div>
+            </div>
+
+            @if (Model.Id > 0)
+            {
+                <button type="submit" name="saveMode" value="save" class="btn btn-primary">Update</button>
+            }
+            else
+            {
+                <button type="submit" name="saveMode" value="save" class="btn btn-primary">Save</button>
+                <button type="submit" name="saveMode" value="saveAndAdd" class="btn btn-success">Save &amp; Add Another</button>
+                <a asp-action="Index" class="btn btn-danger">Cancel</a>
+            }
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        var selectedStateId = "@Model.StateId";
+
+        document.getElementById("ddlCountry").addEventListener("change", function () {
+            var countryId = this.value;
+            var ddlState = document.getElementById("ddlState");
+
+            if (!countryId) {
+                ddlState.innerHTML = '<option value="">Select State</option>';
+                return;
+            }
+
+            fetch('@Url.Action("GetStatesByCountry", "City")?countryId=' + countryId)
+                .then(response => response.json())
+                .then(data => {
+                    var options = '<option value="">Select State</option>';
+                    data.forEach(function (item) {
+                        options += '<option value="' + item.id + '">' + item.text + '</option>';
+                    });
+                    ddlState.innerHTML = options;
+                });
+        });
+    </script>
+}

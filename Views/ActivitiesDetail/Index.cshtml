@@ -1,0 +1,56 @@
+﻿@model List<ActivitiesManagement.Models.ActivityDetailMaster>
+@{
+	ViewData["Title"] = "Activities Detail Master";
+}
+
+<h4 class="fw-bold" >Activities Detail Master</h4>
+<div class="card shadow-sm">
+	<div class="card-body">
+		<div class="d-flex justify-content-between aligh-items align-content-center mb-3">
+			<h5 class="mb-0">Activity Detail List</h5>
+			<a asp-action="AddEdit" class="btn btn-primary btn-sm">Add</a>
+		</div>
+
+		<table class="table table-bordered aligh-middle">
+			<thead class="table-light">
+				<tr>
+					<th>#</th>
+					<th>Activity</th>
+					<th>Title</th>
+					<th>Action Type</th>
+					<th>Master</th>
+					<th>Status Value</th>
+					<th>Status</th>
+					<th>Actions</th>
+				</tr>
+			</thead>
+			<tbody>
+				@foreach (var item in Model)
+				{
+					<tr>
+						<td>@item.ID</td>
+						<td>@item.ActivityTitle</td>
+						<td>@item.Title</td>
+						<td>@item.ActionTypeTitle</td>
+						<td>@item.ActionIsMarkAsStatusVal</td>
+						<td>@item.ActionIsMarkAsStatusText</td>
+						<td class="@(item.StatusFlag == "Active" ? "text-success" : "text-danger")">@item.StatusFlag</td>
+						<td>
+							<a asp-action="AddEdit" asp-route-id="@item.ID" class="btn btn-outline-primary bnt-sm">Edit</a>
+							<form asp-action="ChangeSttaus" method="post" class="d-inline">
+								<input type="hidden" name="id" value="@item.ID" />
+								<input type="hidden" name="Staus" value="@(item.StatusFlag == "Active" ? "InActive" : "Active")" />
+								<button class="btn btn-outline-danger btn-sm" value="@(item.StatusFlag == "Active" ? "InAction" : "Active")"></button>
+     							</form>
+
+								 <form asp-action="Delete" method="post" class="d-inline" onsubmit="return confirm('Delete');">
+									 <input type="hidden" name="id" value="@item.ID"/>
+									 <button type="btn btn-outline-danger btn-sm">Delete</button>
+								 </form>
+						</td>
+					</tr>
+				}
+			</tbody>
+		</table>
+	</div>
+</div>

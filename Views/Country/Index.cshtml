@@ -1,0 +1,147 @@
+﻿@model List<ActivitiesManagement.Models.Country>
+@{
+    ViewData["Title"] = "Country";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h4 class="fw-bold mb-0">COUNTRY</h4>
+    <a asp-action="AddEdit" class="btn btn-primary"><i class="bi bi-plus-lg"></i> Add Country</a>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+            <h5 class="mb-0">Country List</h5>
+            <div class="d-flex align-items-center gap-3 flex-wrap">
+                <div class="input-group input-group-sm" style="max-width:250px;">
+                    <input type="text" id="searchBox" class="form-control" placeholder="Search.." />
+                </div>
+                <div class="d-flex align-items-center gap-2">
+                    <span>Show</span>
+                    <select id="pageSizeSelect" class="form-select form-select-sm" style="width:80px;">
+                        <option value="10">10</option>
+                        <option value="25">25</option>
+                        <option value="50" selected>50</option>
+                        <option value="100">100</option>
+                        <option value="99999">All</option>
+                    </select>
+                    <span>Entries</span>
+                </div>
+            </div>
+        </div>
+
+        <div id="countryList">
+            @foreach (var item in Model)
+            {
+                <div class="border rounded p-3 mb-3 country-row"
+                     data-name="@item.CountryName?.ToLower()" data-code="@item.ShortCode?.ToLower()">
+                    <div class="row align-items-center">
+                        <div class="col-md-1">
+                            <span class="badge bg-secondary fs-6">@item.ID</span>
+                        </div>
+                        <div class="col-md-3">
+                            <small class="text-muted d-block">Country</small>
+                            <strong>@item.CountryName</strong>
+                        </div>
+                        <div class="col-md-2">
+                            <small class="text-muted d-block">Short Code</small>
+                            <strong>@item.ShortCode</strong>
+                        </div>
+                        <div class="col-md-3">
+                            <small class="text-muted d-block">Is Intrested?</small>
+                            <input type="checkbox" disabled @(item.IsIntrested ? "checked" : "") />
+                        </div>
+                        <div class="col-md-3">
+                            <small class="text-muted d-block">Status</small>
+                            <strong class="@(item.StatusFlag == "Active" ? "text-success" : "text-danger")">@item.StatusFlag</strong>
+                        </div>
+                    </div>
+                    <hr />
+                    <div class="d-flex gap-2">
+                        <a asp-action="AddEdit" asp-route-id="@item.ID" class="btn btn-outline-primary btn-sm">
+                            <i class="bi bi-pencil"></i> Edit
+                        </a>
+                        <form asp-action="ChangeStatus" method="post" class="d-inline">
+                            <input type="hidden" name="id" value="@item.ID" />
+                            <input type="hidden" name="status" value="@(item.StatusFlag == "Active" ? "InActive" : "Active")" />
+                            <button type="submit" class="btn btn-outline-danger btn-sm">
+                                @if (item.StatusFlag == "Active")
+                                {
+                                    <text><i class="bi bi-x-circle"></i> InActive</text>
+                                }
+                                else
+                                {
+                                    <text><i class="bi bi-check-lg"></i> Active</text>
+                                }
+                            </button>
+                        </form>
+                        <form asp-action="Delete" method="post" class="d-inline" onsubmit="return confirm('Delete this record?');">
+                            <input type="hidden" name="id" value="@item.ID" />
+                            <button type="submit" class="btn btn-outline-danger btn-sm">
+                                <i class="bi bi-trash"></i> Delete
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <p id="noResults" class="text-muted text-center d-none">No matching records found.</p>
+    </div>
+</div>
+
+<!-- Saved Success Modal -->
+<div class="modal fade" id="savedModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content text-center p-4">
+            <div class="modal-body">
+                <i class="bi bi-check-circle text-success" style="font-size:4rem;"></i>
+                <h4 class="fw-bold mt-3">Saved</h4>
+                <p class="text-muted">@TempData["SavedMessage"]</p>
+                <button type="button" class="btn btn-primary px-4" data-bs-dismiss="modal">OK</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        const searchBox = document.getElementById("searchBox");
+        const pageSizeSelect = document.getElementById("pageSizeSelect");
+        const rows = Array.from(document.querySelectorAll(".country-row"));
+        const noResults = document.getElementById("noResults");
+
+        function applyFilters() {
+            const term = searchBox.value.trim().toLowerCase();
+            const limit = parseInt(pageSizeSelect.value);
+            let visibleCount = 0;
+
+            rows.forEach(row => {
+                const matches = !term ||
+                    (row.dataset.name || "").includes(term) ||
+                    (row.dataset.code || "").includes(term);
+
+                if (matches && visibleCount < limit) {
+                    row.classList.remove("d-none");
+                    visibleCount++;
+                } else {
+                    row.classList.add("d-none");
+                }
+            });
+
+            noResults.classList.toggle("d-none", visibleCount > 0);
+        }
+
+        searchBox.addEventListener("input", applyFilters);
+        pageSizeSelect.addEventListener("change", applyFilters);
+        applyFilters();
+
+        @if (TempData["ShowSavedModalOnIndex"] != null)
+        {
+                <text>
+                var savedModal = new bootstrap.Modal(document.getElementById('savedModal'));
+                savedModal.show();
+                </text>
+        }
+    </script>
+}

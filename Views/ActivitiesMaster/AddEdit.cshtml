@@ -1,0 +1,205 @@
+﻿@model ActivitiesManagement.Models.ActivityFormViewModel
+@{
+    ViewData["Title"] = Model.ID > 0 ? "Edit Activities" : "Add Activities";
+    var actionTypes = ViewBag.ActionTypeList as List<ActivitiesManagement.Models.ActionType>;
+    var masterOptions = new (string Value, string Text)[] {
+        ("ApplicationStatus","Application Status"),("ApplicationType","Application Type"),("Bank","Bank"),
+        ("BioMetrics","BioMetrics"),("CourseRegistration","Course Registration"),("Decision","Decision"),
+        ("DecisionOffer","Decision Offer"),("Documentation","Documentation"),("ExamResult","Exam Result"),
+        ("FeeStatus","Fee Status"),("FileApprovalStatus","File Approval Status"),("FileStatus","File Status"),
+        ("FileSubmissionStatus","File Submission Status"),("FinancesSponsors","Finances Sponsors"),("Forex","Forex"),
+        ("GICStatus","GIC Status"),("Medical","Medical Data"),("MeetingType","Meeting Type"),
+        ("PALStatus","PAL Status"),("PartnerPortal","Partner Portal"),("Platform","Platform"),
+        ("PostActivities","Post Activities"),("QueryStatus","Query Status"),("ReApplication","ReApplication"),
+        ("StudentResponse","Student Response"),("TypeofFees","Type of Fees"),("TypeofOffer","Type of Offer"),
+        ("VisaApplicationStatus","Visa Application Status"),("WelcomeCanada","Welcome"),
+        ("NameOfPartner","Name of the Partner"),("InterviewResult","Interview Result")
+    };
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h3 class="fw-bold">@(Model.ID > 0 ? "EDIT ACTIVITIES" : "ADD ACTIVITIES")</h3>
+    <a asp-action="Index" class="btn btn-primary">Back</a>
+</div>
+
+<form asp-action="AddEdit" method="post" id="mainForm">
+    <input type="hidden" asp-for="ID" />
+    <input type="hidden" name="detailsJson" id="detailsJson" />
+
+    <div class="card p-3 mb-3">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <label class="form-label">Title <span class="text-danger">*</span></label>
+                <input asp-for="Title" class="form-control" required />
+            </div>
+            <div class="col-md-4">
+                <div class="form-check mt-4">
+                    <input class="form-check-input" type="checkbox" asp-for="InAppShow" id="mainInAppShow" />
+                    <label class="form-check-label" for="mainInAppShow">Is In App Visible ?</label>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card p-3">
+        <h5>Action Type List</h5>
+        <hr />
+        <div class="row g-2 align-items-end mb-3">
+            <div class="col-md-3">
+                <label class="form-label">Title <span class="text-danger">*</span></label>
+                <input type="text" id="rowTitle" class="form-control" placeholder="Title" />
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Action Type <span class="text-danger">*</span></label>
+                <select id="rowActionType" class="form-select">
+                    <option value="">Select Action Type</option>
+                    @foreach (var at in actionTypes)
+                    {
+                        <option value="@at.ID">@at.Title</option>
+                    }
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Select Master Name</label>
+                <select id="rowMaster" class="form-select">
+                    <option value="">Select Master Name</option>
+                    @foreach (var m in masterOptions)
+                    {
+                        <option value="@m.Text">@m.Text</option>
+                    }
+                </select>
+            </div>
+            <div class="col-md-2 form-check mt-4">
+                <input type="checkbox" class="form-check-input" id="rowVisible" checked />
+                <label class="form-check-label small" for="rowVisible">Is In App Visible ?</label>
+            </div>
+            <div class="col-md-1">
+                <button type="button" id="btnAddRow" class="btn btn-outline-danger fw-bold w-100">ADD</button>
+            </div>
+        </div>
+
+        <table class="table table-bordered align-middle">
+            <thead class="table-light">
+                <tr>
+                    <th style="width:30px;"></th>
+                    <th>Title</th>
+                    <th>Action Type</th>
+                    <th>Master</th>
+                    <th>In App Visible</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody id="detailsBody"></tbody>
+        </table>
+
+        <div class="text-end mt-3">
+            <button type="submit" class="btn btn-primary">@(Model.ID > 0 ? "Update" : "Save")</button>
+            <a asp-action="Index" class="btn btn-danger">Cancel</a>
+        </div>
+    </div>
+</form>
+
+@section Scripts {
+    <script>
+        let details = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.Details ?? new List<ActivitiesManagement.Models.ActivityDetailRow>()));
+        if (!details) details = [];
+
+        let dragIndex = null;
+
+        function renderTable() {
+            const tbody = document.getElementById("detailsBody");
+            tbody.innerHTML = "";
+            details.forEach((row, i) => {
+                const statusChecked = row.StatusFlag === "Active";
+                const tr = document.createElement("tr");
+                tr.setAttribute("draggable", "true");
+                tr.dataset.index = i;
+
+                tr.innerHTML = `
+                    <td class="text-center" style="cursor:move;"><i class="bi bi-arrows-move"></i></td>
+                    <td>${row.Title}</td>
+                    <td>${row.ActionTypeTitle || ""}</td>
+                    <td>${row.MasterName || ""}</td>
+                    <td>${row.IsInAppVisible ? "Yes" : "No"}</td>
+                    <td>
+                        <div class="form-check mb-1">
+                            <input class="form-check-input" type="checkbox" ${statusChecked ? "checked" : ""} onchange="toggleStatus(${i}, this.checked)">
+                            <label class="form-check-label small">Update Status</label>
+                        </div>
+                        <select class="form-select form-select-sm" onchange="setStatus(${i}, this.value)" ${statusChecked ? "" : "disabled"}>
+                            <option value="Active" ${row.StatusFlag === "Active" ? "selected" : ""}>Active</option>
+                            <option value="InActive" ${row.StatusFlag === "InActive" ? "selected" : ""}>InActive</option>
+                        </select>
+                    </td>
+                    <td><button type="button" class="btn btn-outline-danger btn-sm" onclick="removeRow(${i})">Remove</button></td>
+                `;
+
+                tr.addEventListener("dragstart", () => dragIndex = i);
+                tr.addEventListener("dragover", (e) => e.preventDefault());
+                tr.addEventListener("drop", () => {
+                    const moved = details.splice(dragIndex, 1)[0];
+                    details.splice(i, 0, moved);
+                    renderTable();
+                });
+
+                tbody.appendChild(tr);
+            });
+        }
+
+        function toggleStatus(i, checked) {
+            if (!checked) {
+                details[i].StatusFlag = "InActive";
+            } else {
+                details[i].StatusFlag = "Active";
+            }
+            renderTable();
+        }
+
+        function setStatus(i, value) {
+            details[i].StatusFlag = value;
+        }
+
+        function removeRow(i) {
+            details.splice(i, 1);
+            renderTable();
+        }
+
+        document.getElementById("btnAddRow").addEventListener("click", function () {
+            const titleEl = document.getElementById("rowTitle");
+            const atSelect = document.getElementById("rowActionType");
+            const masterSelect = document.getElementById("rowMaster");
+            const visibleEl = document.getElementById("rowVisible");
+
+            const title = titleEl.value.trim();
+
+            if (!title || !atSelect.value) {
+                alert("Title and Action Type are required.");
+                return;
+            }
+
+            details.push({
+                ID: 0,
+                Title: title,
+                ActionTypeId: parseInt(atSelect.value),
+                ActionTypeTitle: atSelect.options[atSelect.selectedIndex].text,
+                MasterName: masterSelect.value,
+                IsInAppVisible: visibleEl.checked,
+                StatusFlag: "Active"
+            });
+
+            titleEl.value = "";
+            atSelect.value = "";
+            masterSelect.value = "";
+            visibleEl.checked = true;
+
+            renderTable();
+        });
+
+        document.getElementById("mainForm").addEventListener("submit", function () {
+            document.getElementById("detailsJson").value = JSON.stringify(details);
+        });
+
+        renderTable();
+    </script>
+}

@@ -1,0 +1,156 @@
+﻿@model ActivitiesManagement.Models.ActivityDetailMaster
+@{
+    ViewData["Title"] = Model.ID > 0 ? "Edit Activity Detail" : "Add Activity Detail";
+    var activities = ViewBag.ActivityList as List<ActivitiesManagement.Models.ActivityMaster>;
+    var actionTypes = ViewBag.ActionTypeList as List<ActivitiesManagement.Models.ActionType>;
+}
+
+<h4 class="fw-bold">@ViewData["Title"]</h4>
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        <form asp-action="AddEdit" method="post">
+            <input type="hidden" asp-for="ID" />
+
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label class="form-label">Activity <span class="text-danger">*</span></label>
+                    <select asp-for="ActivityId" class="form-control" required>
+                        <option value="">Select Activity</option>
+                        @foreach (var a in activities)
+                        {
+                            <option value="@a.Id">@a.Title</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Title <span class="text-danger">*</span></label>
+                    <input asp-for="Title" class="form-control" required />
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label class="form-label">Action Type <span class="text-danger">*</span></label>
+                    <select asp-for="ActionTypeId" class="form-control" required>
+                        <option value="">Select Action Type</option>
+                        @foreach (var at in actionTypes)
+                        {
+                            <option value="@at.ID">@at.Title</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Master <span class="text-danger">*</span></label>
+                    <select class="form-control" id="ddlActivitiesMaster" asp-for="ActionIsMarkAsStatusVal">
+                        <option value="">Select Master</option>
+                        <option value="ApplicationStatus">Application Status</option>
+                        <option value="ApplicationType">Application Type</option>
+                        <option value="Bank">Bank</option>
+                        <option value="BioMetrics">Biometric Data</option>
+                        <option value="CourseRegistration">Course Registration</option>
+                        <option value="Decision">Decision</option>
+                        <option value="DecisionOffer">Decision Offer</option>
+                        <option value="Documentation">Documentation</option>
+                        <option value="ExamResult">Exam Result</option>
+                        <option value="FeeStatus">Fee Status</option>
+                        <option value="FileApprovalStatus">File Approval Status</option>
+                        <option value="FileStatus">File Status</option>
+                        <option value="FileSubmissionStatus">File Submission Status</option>
+                        <option value="FinancesSponsors">Finances Sponsors</option>
+                        <option value="Forex">Forex</option>
+                        <option value="GICStatus">GIC Status</option>
+                        <option value="Medical">Medical Data</option>
+                        <option value="MeetingType">Meeting Type</option>
+                        <option value="PALStatus">PAL Status</option>
+                        <option value="PartnerPortal">Partner Portal</option>
+                        <option value="Platform">Platform</option>
+                        <option value="PostActivities">Post Activities</option>
+                        <option value="QueryStatus">Query Status</option>
+                        <option value="ReApplication">ReApplication</option>
+                        <option value="StudentResponse">Student Response</option>
+                        <option value="TypeofFees">Type of Fees</option>
+                        <option value="TypeofOffer">Type of Offer</option>
+                        <option value="VisaApplicationStatus">Visa Application Status</option>
+                        <option value="WelcomeCanada">Welcome</option>
+                        <option value="NameOfPartner">Name of the Partner</option>
+                        <option value="InterviewResult">Interview Result</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label class="form-label">Status (loaded from selected Master)</label>
+                    <select class="form-control" id="ddlStatusValue" asp-for="ActionIsMarkAsStatusId">
+                        <option value="">Select Master first</option>
+                    </select>
+                    <input type="hidden" id="hdnStatusText" asp-for="ActionIsMarkAsStatusText" />
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">New Status (optional - change to)</label>
+                    <select class="form-control" id="ddlNewStatusValue" asp-for="NewActionIsMarkAsStatusId">
+                        <option value="">Select Master first</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Page Master</label>
+                <input asp-for="PageMaster" class="form-control" />
+            </div>
+
+            <button type="submit" class="btn btn-primary">Save</button>
+            <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            var selectedMaster = "@Model.ActionIsMarkAsStatusVal";
+            var selectedStatusId = "@Model.ActionIsMarkAsStatusId";
+
+            $("#ddlActivitiesMaster").on("change", function () {
+                var masterKey = $(this).val();
+                loadStatusOptions(masterKey, "#ddlStatusValue");
+                loadStatusOptions(masterKey, "#ddlNewStatusValue");
+            });
+
+            function loadStatusOptions(masterKey, targetDropdown, selectedValue) {
+                if (!masterKey) {
+                    $(targetDropdown).html('<option value="">Select Master first</option>');
+                    return;
+                }
+                $.ajax({
+                    url: '@Url.Action("GetMasterStatusList", "ActivitiesDetail")',
+                    type: 'GET',
+                    data: { masterKey: masterKey },
+                    success: function (data) {
+                        var options = '<option value="">Select Status</option>';
+                        $.each(data, function (i, item) {
+                            var selected = (selectedValue && item.id == selectedValue) ? 'selected' : '';
+                            options += '<option value="' + item.id + '" ' + selected + '>' + item.text + '</option>';
+                        });
+                        $(targetDropdown).html(options);
+                    },
+                    error: function () {
+                        $(targetDropdown).html('<option value="">Error loading statuses</option>');
+                    }
+                });
+            }
+
+            // On edit, pre-load status options for the already-selected master
+            if (selectedMaster) {
+                loadStatusOptions(selectedMaster, "#ddlStatusValue", selectedStatusId);
+                loadStatusOptions(selectedMaster, "#ddlNewStatusValue");
+            }
+
+            // Update hidden text field whenever a status is chosen
+            $("#ddlStatusValue").on("change", function () {
+                $("#hdnStatusText").val($(this).find("option:selected").text());
+            });
+        });
+    </script>
+}

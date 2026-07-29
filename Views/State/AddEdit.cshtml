@@ -1,0 +1,54 @@
+﻿@model ActivitiesManagement.Models.State
+@{
+	ViewData["Title"] = Model.ID > 0 ? "Edit State" : "Add State";
+	var countries = ViewBag.CountryList as List<ActivitiesManagement.Models.Country>;
+}
+<div class="d-flex justify-content-between aligh-items-center mb-2">
+	<div>
+		<h4 class="fw-bold mb-0">@(Model.ID > 0 ? "EDIT STATE": "ADD STATE")</h4>
+		<p class="text-muted">Dashboard / State / @(Model.ID > 0 ? "Edit State" : "Add State")</p>
+	</div>
+	<a asp-action="Index" class="btn btn-primary">Back</a>
+</div> 
+
+<div class="card shadow-sm">
+	<div class="card-body">
+		<form asp-action="AddEdit" method="post">
+			<input type="hidden" asp-for="ID" />
+
+			<div class="row mb-3">
+				<div class="col-md-4">
+					<label class="form-label">Country<span class="text-danger">*</span></label>
+					<select asp-for="CountryId" class="form-select" required>
+						<option value="">Select Country</option>
+						@foreach (var c in countries)
+						{
+							<option value="@c.ID">@c.CountryName</option>
+						}
+					</select>
+				</div>
+
+				<div class="col-md-4">
+					<label class="form-label">State Name<span class="text-danger">*</span></label>
+					<input asp-for="StateName" class="form-control" placeholder="Enter State Name" required />
+				</div>
+
+				<div class="col-md-4">
+					<label class="form-label">Short Code<span class="text-danger">*</span></label>
+					<input asp-for="ShortCode" class="form-control" placeholder="Enter Short Code" required/>
+				</div>
+			</div>
+
+			@if(Model.ID >0)
+			{
+				<button type="submit" name="saveMode" value="save" class="btn btn-primary">Update</button>
+			}
+			else
+			{
+				<button type="submit" name="saveMode" value="save" class="btn btn-primary">Save</button>
+                <button type="submit" name="saveMode" value="saveAndAdd" class="btn btn-success">Save &amp; Add Anoother</button>
+				<a asp-action="Index" class="btn btn-danger">Cancel</a>
+			}
+		</form>
+	</div>
+</div>
