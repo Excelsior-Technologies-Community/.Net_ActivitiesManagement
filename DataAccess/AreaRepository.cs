@@ -20,7 +20,7 @@ namespace ActivitiesManagement.DataAccess
             {
                 list.Add(new Area
                 {
-                    Id = Convert.ToInt32(dr["ID"]),
+                    Id = Convert.ToInt32(dr["Id"]),
                     CountryId = Convert.ToInt32(dr["CountryId"]),
                     CountryName = dr["CountryName"]?.ToString(),
                     StateId = Convert.ToInt32(dr["StateId"]),
@@ -29,7 +29,7 @@ namespace ActivitiesManagement.DataAccess
                     CityName = dr["CityName"]?.ToString(),
                     AreaName = dr["Area"]?.ToString(),
                     Pincode = dr["Pincode"]?.ToString(),
-                    StatusFlag = dr["StatusFlag"].ToString() ?? "A"
+                    StatusFlag = dr["StatusFlag"]?.ToString() ?? "A"
                 });
             }
             return list;
@@ -42,11 +42,11 @@ namespace ActivitiesManagement.DataAccess
             cmd.Parameters.AddWithValue("@Id", id);
             con.Open();
             using var dr = cmd.ExecuteReader();
-            if(dr.Read())
+            if (dr.Read())
             {
                 return new Area
                 {
-                    Id = Convert.ToInt32(dr["ID"]),
+                    Id = Convert.ToInt32(dr["Id"]),
                     CountryId = Convert.ToInt32(dr["CountryId"]),
                     StateId = Convert.ToInt32(dr["StateId"]),
                     CityId = Convert.ToInt32(dr["CityId"]),
@@ -55,8 +55,9 @@ namespace ActivitiesManagement.DataAccess
                     StatusFlag = dr["StatusFlag"]?.ToString() ?? "A"
                 };
             }
-            return null; 
+            return null;
         }
+
         public int Insert(Area model, int createUser)
         {
             using var con = _db.GetConnection();
@@ -64,7 +65,7 @@ namespace ActivitiesManagement.DataAccess
             cmd.Parameters.AddWithValue("@CountryId", model.CountryId);
             cmd.Parameters.AddWithValue("@StateId", model.StateId);
             cmd.Parameters.AddWithValue("@CityId", model.CityId);
-            cmd.Parameters.AddWithValue("@Area",model.AreaName ?? "");
+            cmd.Parameters.AddWithValue("@Area", model.AreaName ?? "");
             cmd.Parameters.AddWithValue("@Pincode", model.Pincode ?? "");
             cmd.Parameters.AddWithValue("@CreateUser", createUser);
             con.Open();
@@ -77,6 +78,7 @@ namespace ActivitiesManagement.DataAccess
             using var cmd = new SqlCommand("USP_Area_Update", con) { CommandType = CommandType.StoredProcedure };
             cmd.Parameters.AddWithValue("@Id", model.Id);
             cmd.Parameters.AddWithValue("@CountryId", model.CountryId);
+            cmd.Parameters.AddWithValue("@StateId", model.StateId);
             cmd.Parameters.AddWithValue("@CityId", model.CityId);
             cmd.Parameters.AddWithValue("@Area", model.AreaName ?? "");
             cmd.Parameters.AddWithValue("@Pincode", model.Pincode ?? "");
@@ -85,14 +87,14 @@ namespace ActivitiesManagement.DataAccess
             cmd.ExecuteNonQuery();
         }
 
-        public void ChangeStatus(int id, string StatusFlag, int UpdateUser)
+        public void ChangeStatus(int id, string statusFlag, int updateUser)
         {
             using var con = _db.GetConnection();
             using var cmd = new SqlCommand("USP_Area_ChangeStatus", con) { CommandType = CommandType.StoredProcedure };
             cmd.Parameters.AddWithValue("@Id", id);
-            cmd.Parameters.AddWithValue("@StatusFlag", StatusFlag);
-            cmd.Parameters.AddWithValue("UpdateUser", UpdateUser);
-            con.Open(); 
+            cmd.Parameters.AddWithValue("@StatusFlag", statusFlag);
+            cmd.Parameters.AddWithValue("@UpdateUser", updateUser);
+            con.Open();
             cmd.ExecuteNonQuery();
         }
 
@@ -106,3 +108,4 @@ namespace ActivitiesManagement.DataAccess
         }
     }
 }
+

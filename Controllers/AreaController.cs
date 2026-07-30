@@ -19,7 +19,7 @@ namespace ActivitiesManagement.Controllers
             _cityRepo = cityRepo;
         }
 
-        public ActionResult Index()
+        public IActionResult Index()
         {
             return View(_repo.GetAll());
         }
@@ -27,7 +27,7 @@ namespace ActivitiesManagement.Controllers
         [HttpGet]
         public IActionResult AddEdit(int id = 0)
         {
-            ViewBag.ContryList = _countryRepo.GetActiveList();
+            ViewBag.CountryList = _countryRepo.GetActiveList();
 
             var model = id > 0 ? _repo.GetById(id) : new Area();
 
@@ -54,20 +54,20 @@ namespace ActivitiesManagement.Controllers
             else
                 model.Id = _repo.Insert(model, currentUserId);
 
-            TempData["SaveMessage"] = isNew ? "Area Added Succesfully" : "Area Updated Successfully";
+            TempData["SavedMessage"] = isNew ? "Area Added Successfully" : "Area Updated Successfully";
 
-            if(saveMode == "SaveAndAdd")
+            if (saveMode == "saveAndAdd")
             {
-                TempData["ShowSaveModal"] = "true";
+                TempData["ShowSavedModal"] = "true";
                 return RedirectToAction("AddEdit");
             }
 
-            TempData["ShowSaveModalOnIndex"] = "true";
+            TempData["ShowSavedModalOnIndex"] = "true";
             return RedirectToAction("Index");
         }
 
         [HttpGet]
-        public JsonResult GetStateByCountry(int countryId)
+        public JsonResult GetStatesByCountry(int countryId)
         {
             var states = _stateRepo.GetByCountryId(countryId);
             return Json(states.Select(s => new { id = s.ID, text = s.StateName }));
@@ -77,11 +77,11 @@ namespace ActivitiesManagement.Controllers
         public JsonResult GetCitiesByState(int stateId)
         {
             var cities = _cityRepo.GetByStateId(stateId);
-            return Json(cities.Select(c => new { id = c.Id, text = c.StateName }));
+            return Json(cities.Select(c => new { id = c.Id, text = c.CityName }));
         }
 
         [HttpPost]
-        public IActionResult ChangeStatus (int id, string status)
+        public IActionResult ChangeStatus(int id, string status)
         {
             _repo.ChangeStatus(id, status, 1);
             return RedirectToAction("Index");
@@ -93,6 +93,5 @@ namespace ActivitiesManagement.Controllers
             _repo.Delete(id);
             return RedirectToAction("Index");
         }
-  
     }
 }
