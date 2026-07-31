@@ -1,0 +1,153 @@
+﻿@model ActivitiesManagement.Models.Area
+@{
+    ViewData["Title"] = Model.Id > 0 ? "Edit Area" : "Add Area";
+    var countries = ViewBag.CountryList as List<ActivitiesManagement.Models.Country>;
+    var states = ViewBag.StateList as List<ActivitiesManagement.Models.State>;
+    var cities = ViewBag.CityList as List<ActivitiesManagement.Models.City>;
+}
+
+<div class="d-flex justify-content-between align-items-center mb-2">
+    <div>
+        <h4 class="fw-bold mb-0">@(Model.Id > 0 ? "EDIT AREA" : "ADD AREA")</h4>
+        <p class="text-muted">Dashboard / Area / @(Model.Id > 0 ? "Edit Area" : "Add Area")</p>
+    </div>
+    <a asp-action="Index" class="btn btn-primary">BACK</a>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        <form asp-action="AddEdit" method="post">
+            <input type="hidden" asp-for="Id" />
+
+            <div class="row mb-3">
+                <div class="col-md-3">
+                    <label class="form-label">Country <span class="text-danger">*</span></label>
+                    <select asp-for="CountryId" id="ddlCountry" class="form-select" required>
+                        <option value="">Select Country</option>
+                        @foreach (var c in countries)
+                        {
+                            <option value="@c.ID">@c.CountryName</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">State <span class="text-danger">*</span></label>
+                    <select asp-for="StateId" id="ddlState" class="form-select" required>
+                        <option value="">Select State</option>
+                        @if (states != null)
+                        {
+                            foreach (var s in states)
+                            {
+                                <option value="@s.ID">@s.StateName</option>
+                            }
+                        }
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">City <span class="text-danger">*</span></label>
+                    <select asp-for="CityId" id="ddlCity" class="form-select" required>
+                        <option value="">Select City</option>
+                        @if (cities != null)
+                        {
+                            foreach (var c in cities)
+                            {
+                                <option value="@c.Id">@c.CityName</option>
+                            }
+                        }
+                    </select>
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-4">
+                    <label class="form-label">Area <span class="text-danger">*</span></label>
+                    <input asp-for="AreaName" class="form-control" placeholder="Enter Area" required />
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">Pincode <span class="text-danger">*</span></label>
+                    <input asp-for="Pincode" class="form-control" placeholder="Enter Pincode" required />
+                </div>
+            </div>
+
+            @if (Model.Id > 0)
+            {
+                <button type="submit" name="saveMode" value="save" class="btn btn-primary">Update</button>
+            }
+            else
+            {
+                <button type="submit" name="saveMode" value="save" class="btn btn-primary">Save</button>
+                <button type="submit" name="saveMode" value="saveAndAdd" class="btn btn-success">Save &amp; Add Another</button>
+                <a asp-action="Index" class="btn btn-danger">Cancel</a>
+            }
+        </form>
+    </div>
+</div>
+
+<!-- Saved Success Modal -->
+<div class="modal fade" id="savedModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content text-center p-4">
+            <div class="modal-body">
+                <i class="bi bi-check-circle text-success" style="font-size:4rem;"></i>
+                <h4 class="fw-bold mt-3">Success</h4>
+                <p class="text-muted">@TempData["SavedMessage"]</p>
+                <button type="button" class="btn btn-primary px-4" data-bs-dismiss="modal">OK</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.getElementById("ddlCountry").addEventListener("change", function () {
+            var countryId = this.value;
+            var ddlState = document.getElementById("ddlState");
+            var ddlCity = document.getElementById("ddlCity");
+
+            ddlCity.innerHTML = '<option value="">Select City</option>';
+
+            if (!countryId) {
+                ddlState.innerHTML = '<option value="">Select State</option>';
+                return;
+            }
+
+            fetch('@Url.Action("GetStatesByCountry", "Area")?countryId=' + countryId)
+                .then(response => response.json())
+                .then(data => {
+                    var options = '<option value="">Select State</option>';
+                    data.forEach(function (item) {
+                        options += '<option value="' + item.id + '">' + item.text + '</option>';
+                    });
+                    ddlState.innerHTML = options;
+                });
+        });
+
+        document.getElementById("ddlState").addEventListener("change", function () {
+            var stateId = this.value;
+            var ddlCity = document.getElementById("ddlCity");
+
+            if (!stateId) {
+                ddlCity.innerHTML = '<option value="">Select City</option>';
+                return;
+            }
+
+            fetch('@Url.Action("GetCitiesByState", "Area")?stateId=' + stateId)
+                .then(response => response.json())
+                .then(data => {
+                    var options = '<option value="">Select City</option>';
+                    data.forEach(function (item) {
+                        options += '<option value="' + item.id + '">' + item.text + '</option>';
+                    });
+                    ddlCity.innerHTML = options;
+                });
+        });
+
+        @if (TempData["ShowSavedModal"] != null)
+        {
+                <text>
+                var savedModal = new bootstrap.Modal(document.getElementById('savedModal'));
+                savedModal.show();
+                </text>
+        }
+    </script>
+}

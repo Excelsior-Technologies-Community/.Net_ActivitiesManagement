@@ -16,6 +16,7 @@ namespace ActivitiesManagement
             builder.Services.AddScoped<CountryRepository>();
             builder.Services.AddScoped<StateRepository>();
             builder.Services.AddScoped<CityRepository>();
+            builder.Services.AddScoped<AreaRepository>();
             var app = builder.Build();
 
             if (!app.Environment.IsDevelopment())

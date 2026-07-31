@@ -37,35 +37,35 @@
                 <div class="border rounded p-3 mb-3 area-row"
                      data-country="@item.CountryName?.ToLower()" data-state="@item.StateName?.ToLower()"
                      data-city="@item.CityName?.ToLower()" data-area="@item.AreaName?.ToLower()">
-                    <div class="row">
-                        <div class="col-md-1">
-                            <span class="badge bg-secondary fs-6">@item.Id</span>
-                        </div>
-                        <div class="col-md-2">
+
+                    <div class="mb-2">
+                        <span class="badge bg-secondary fs-6">@item.Id</span>
+                    </div>
+
+                    <div class="row mb-4">
+                        <div class="col-md-4">
                             <small class="text-muted d-block">Country</small>
-                            <strong>@item.CountryName</strong>
-                        </div>
-                        <div class="col-md-2">
-                            <small class="text-muted d-block">State</small>
-                            <strong>@item.StateName</strong>
-                        </div>
-                        <div class="col-md-2">
-                            <small class="text-muted d-block">City</small>
-                            <strong>@item.CityName</strong>
-                        </div>
-                        <div class="col-md-2">
+                            <strong class="d-block mb-3">@item.CountryName</strong>
+
                             <small class="text-muted d-block">Area</small>
                             <strong>@item.AreaName</strong>
                         </div>
-                        <div class="col-md-1">
-                            <small class="text-muted d-block">Pincode</small>
+                        <div class="col-md-4">
+                            <small class="text-muted d-block">State</small>
+                            <strong>@item.StateName</strong>
+
+                            <small class="text-muted d-block mt-3">Pincode</small>
                             <strong>@item.Pincode</strong>
                         </div>
-                        <div class="col-md-2">
-                            <small class="text-muted d-block">Status</small>
+                        <div class="col-md-4">
+                            <small class="text-muted d-block">City</small>
+                            <strong>@item.CityName</strong>
+
+                            <small class="text-muted d-block mt-3">Status</small>
                             <strong class="@(item.StatusFlag == "A" ? "text-success" : "text-danger")">@item.StatusDisplay</strong>
                         </div>
                     </div>
+
                     <hr />
                     <div class="d-flex gap-2">
                         <a asp-action="AddEdit" asp-route-id="@item.Id" class="btn btn-outline-primary btn-sm">
