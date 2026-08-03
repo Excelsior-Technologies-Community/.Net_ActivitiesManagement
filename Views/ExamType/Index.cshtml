@@ -1,0 +1,45 @@
+﻿@model List<ActivitiesManagement.Models.ExamType>
+@{
+	ViewData["Title"] = "Exam Type";
+}
+
+<div class="d-flex justify-content-between aligh-items-center mb-3">
+	<h4 class="fw-bold mb-0">Exam Type</h4>
+	<div class="d-flex gap-2">
+		<a asp-action="ExamTypeInsert" class="btn btn-primary">ADD</a>
+		<button type="button" id="btnDownload" class="btn btn-outline-secondary">Download</button>
+	</div>
+</div> 
+
+<div class="card shadow-sm">
+	<div class="card-body">
+		<div class="d-flex justify-content-between aligh-items-center mb-3 flex-wrap gap-2">
+			<h5 class="mb-0">EXAM TYPE LIST</h5>
+			<div class="input-group input-group-sm" style="max-width:250px;">
+				<input type="text" id="serchBox" class="form-control" placeholder="Search..."/>
+			</div>
+			<div class="d-flex aligh-items-center gap-2">
+				<span>Show</span>
+				<select id="pageSizeSelect" class="form-select form-select-sm" style="width:80px;">
+					<option value="10">10</option>
+					<option value="25">25</option>
+					<option value="50">50</option>
+					<option value="100">100</option>
+					<option value="9999">ALL</option>
+				</select>
+				<span>entries</span>
+			</div>
+		</div>
+	</div>
+
+	<div id="examTypeList"
+      @foreach (var item in Model)
+	{
+		<div class="boreder rounded p-3 mb-3 exam-row" data-title="@item.Title?.ToLower()">
+			<div class="mb-2">
+
+			</div>
+		</div>
+	}
+	</div>
+</div>
