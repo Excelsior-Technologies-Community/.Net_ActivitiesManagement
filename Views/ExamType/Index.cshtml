@@ -37,9 +37,126 @@
 	{
 		<div class="boreder rounded p-3 mb-3 exam-row" data-title="@item.Title?.ToLower()">
 			<div class="mb-2">
-
+				<span class="badge bg-secondary fs-6">@item.Id</span>
 			</div>
+			<div class="row-mb-3">
+				<small class="text-muted d-block">Is Lead ?</small>
+				<strong>@(item.IsLeadChecked ? "Yes" : "No ")</strong>
+			</div>
+			<div class="col-md-3">
+				<small class="text-muted d-block">Is Inquiry</small>
+				<strong>@(item.IsInquiryChecked ? "Yes" : "No") </strong>
+			</div>
+			<div class="col-md-3">
+				<small class="text-muted d-block">Is Registration ?</small>
+				<strong>@(item.IsRegistrartionChecked ? "Yes" : "No")</strong>
+			</div>
+		</div>
+		<div class="row mb-3">
+			<div class="col-md-3">
+				<small class="text-muted d-block">Is Coaching</small>
+				<strong>@(item.IsCoachingChecked ? "Yes" : "No")</strong>
+			</div>
+			<div class="col-md-3">
+				<small class="text-muted d-block">Is Process ?</small>
+				<strong>@(item.IsProcessChecked? "Yes" : "No")</strong>
+			</div>
+			<div class="col-md-3">
+				<small class="text-muted d-block">Is Mock ?</small>
+				<strong>@(item.IsMockChecked? "Yes" : "No")</strong>
+			</div>
+			<div class="col-md-3">
+				<small class="text-muted d-block">Is Professional ?</small>
+				<strong>@(item.IsProfessionalChecked ? "Yes" : "No")</strong>
+			</div>
+		</div>
+
+		<div class="row mb-3">
+			<div class="col-md-3">
+				<small class="text-muted d-block">Is English Test ?</small>
+				<strong>@(item.IsEnglishTestChecked ? "Yes" : "No")</strong>
+			</div>
+			<div class="col-md-3">
+				<small class="text-muted d-block">Status</small>
+				<strong class="@(item.StatusFlag == "A" ? "text-success" : "text-danger")">@item.StatusDisplay</strong>
+			</div>
+			<div class="col-md-6">
+				<small class="text-muted d-block">Description</small>
+				<strong>@item.Description</strong>
+			</div>
+		</div>
+
+		<hr />
+		<div class="d-flex gap-2">
+			<a asp-action="ExamTypeEdit" asp-route-id="@item.Id" class="btn btn-outline-primary btn-sm">
+				<i class="bi bi-pencil"></i> Edit
+			</a>
+
+			<form asp-action="ChangeStatus" method="post" class="d-inline">
+				<input type="hidden" name="id" value="@item.Id"/>
+				<input type="hidden" name="status" value="@item.Id"/>
+				<button type="submit" class="btn btn-outline-danger btn-sm" >
+                 <i class="bi bi-slash-circle"></i>@(item.StatusFlag == "A" ? "I" : "A")"/>
+				 </button>
+			</form>
+			<form asp-action="Delete" method="post" class="d-inline" onsubmit="return confirm('DElete this record?');"?>
+				<input type="hidden" name="id" value="@item.Id"/>
+				<button type="submit" class="btn btn-outline-danger btn-sm">
+					<i class="bg-info bi-trash"></i> Delete
+				</button>
+			</form>
 		</div>
 	}
 	</div>
+	<p id="noResults" class="text-muted text-centet d-none">No Matching records Found.</p>
 </div>
+
+<div class="modal fade" id="saveModal" tabindex="-1">
+	<div class="modal-dialog modal-dialog-centered">
+		<div class="modal-content text-center p-4">
+			<div class="modal-body">
+				<i class="bg-info bi-check-circle text-success" style="font-size:4rem;"></i>
+				<h4 class="fw-bold mt-3">Success</h4>
+				<p class="text-muted">@TempData["SaveMessage"]</p>
+				<button type="button" class="btn btn-primary px-4" data-bs-dismiss="modal">Ok</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+@section Scripts{
+<script>
+    	const serchBox = document.getElementById("serchBox");
+		const pageSizeSelect = document.getElementById("pageSizeSelect");
+		const rows = Array.from(document.querySelectorAll(".rxam-row"));
+		const noResults = document.getElementById("noResults");
+
+		function applyFilters(){
+		 const term = serchBox.value.trim().toLowerCase();
+		 const limit = parseInt(pageSizeSelect.value;
+         let visibleCount = 0;
+
+		 rows.forEach(rows => {
+			const matches = !term || (row.dataset.title || "").include(term);
+			if(matches && visibleCount < limit){
+				row.classList.remove("d-none");
+				visibleCount++;
+			}else{
+				row.classList.add("d-none");
+			}
+		 });
+		 noResults.classList.toggle("d-none",visibleCount > 0);
+		}
+		serchBox.addEventListener("input", applyFilters);
+		pageSizeSelect.addEventListener("change",applyFilters);
+		applyFilters();
+
+	@if (TempData["ShowSaveModalOnIndex"] != null)
+		{
+		  <text>
+		     var saveModal = new bootstrap.Modal(document.getElementById('saveModal'));
+			 saveModal.show();
+			 </text>	
+		 }
+	</script>
+}
