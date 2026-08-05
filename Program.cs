@@ -16,11 +16,8 @@ namespace ActivitiesManagement
             builder.Services.AddScoped<CountryRepository>();
             builder.Services.AddScoped<StateRepository>();
             builder.Services.AddScoped<CityRepository>();
-<<<<<<< Updated upstream
             builder.Services.AddScoped<AreaRepository>();
-=======
             builder.Services.AddScoped<ExamTypeRepository>();
->>>>>>> Stashed changes
             var app = builder.Build();
 
             if (!app.Environment.IsDevelopment())

@@ -1,0 +1,192 @@
+﻿@model ActivitiesManagement.Models.ExamType
+@{
+    ViewData["Title"] = Model.Id > 0 ? "Edit Exam Type" : "Add Exam Type";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <div>
+        <h4 class="fw-bold mb-0">@(Model.Id > 0 ? "EDIT EXAM TYPE" : "ADD EXAM TYPE")</h4>
+        <small class="text-muted">Dashboard / Exam Type / @(Model.Id > 0 ? "Edit Exam Type" : "Add Exam Type")</small>
+    </div>
+    <a asp-action="Index" class="btn btn-primary">BACK</a>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        <form asp-action="AddEdit" method="post" id="examTypeForm">
+            @Html.AntiForgeryToken()
+            <input type="hidden" asp-for="Id" />
+
+            <div class="mb-3">
+                <label class="form-label">Title <span class="text-danger">*</span></label>
+                <input asp-for="Title" class="form-control" placeholder="Enter Title" required />
+                <span asp-validation-for="Title" class="text-danger"></span>yyy
+            </div>
+
+            <div class="mb-3 d-flex flex-wrap gap-4">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="IsLead" id="IsLead" checked="@Model.IsLeadChecked">
+                    <label class="form-check-label" for="IsLead">Is Lead ?</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="IsInquiry" id="IsInquiry" checked="@Model.IsInquiryChecked">
+                    <label class="form-check-label" for="IsInquiry">Is Inquiry ?</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="IsRegistration" id="IsRegistration" checked="@Model.IsRegistrationChecked">
+                    <label class="form-check-label" for="IsRegistration">Is Registration ?</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="IsCoaching" id="IsCoaching" checked="@Model.IsCoachingChecked">
+                    <label class="form-check-label" for="IsCoaching">Is Coaching ?</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="IsProcess" id="IsProcess" checked="@Model.IsProcessChecked">
+                    <label class="form-check-label" for="IsProcess">Is Process ?</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="IsMock" id="IsMock" checked="@Model.IsMockChecked">
+                    <label class="form-check-label" for="IsMock">Is Mock ?</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="IsProfessional" id="IsProfessional" checked="@Model.IsProfessionalChecked">
+                    <label class="form-check-label" for="IsProfessional">Is Professional ?</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="IsEnglishTest" id="IsEnglishTest" checked="@Model.IsEnglishTestChecked">
+                    <label class="form-check-label" for="IsEnglishTest">Is English Test ?</label>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Description</label>
+                <textarea asp-for="Description" class="form-control" rows="3" placeholder="Enter Description"></textarea>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Grade Title<span class="text-danger">*</span></label>
+                <div class="input-group" style="max-width:500px;">
+                    <input type="text" id="gradeTitleInput" class="form-control" placeholder="Enter Grade Title" />
+                    <button type="button" id="btnAddGrade" class="btn btn-primary">ADD</button>
+                </div>
+            </div>
+
+            <table class="table table-bordered" style="max-width:600px;">
+                <thead>
+                    <tr>
+                        <th>Grade Title</th>
+                        <th style="width:120px;">Action</th>
+                    </tr>
+                </thead>
+                <tbody id="gradeTitleBody">
+                    @if (Model.Id > 0)
+                    {
+                        foreach (var grade in Model.GradeTitles)
+                        {
+                            <tr data-id="@grade.Id">
+                                <td>@grade.Title</td>
+                                <td><button type="button" class="btn btn-outline-danger btn-sm btnRemoveGrade" data-id="@grade.Id">Remove</button></td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+            <div id="gradeHiddenInputs"></div>
+
+            <div class="d-flex gap-2 mt-3">
+                @if (Model.Id > 0)
+                {
+                    <button type="submit" class="btn btn-primary">Update</button>
+                }
+                else
+                {
+                    <button type="submit" name="saveAndAddAnother" value="false" class="btn btn-primary">Save</button>
+                    <button type="submit" name="saveAndAddAnother" value="true" class="btn btn-info text-white">Save &amp; Add Another</button>
+                }
+                <a asp-action="Index" class="btn btn-danger">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        const examTypeId = @Model.Id;
+        const isEditMode = examTypeId > 0;
+        const gradeTitleInput = document.getElementById("gradeTitleInput");
+        const gradeTitleBody = document.getElementById("gradeTitleBody");
+        const gradeHiddenInputs = document.getElementById("gradeHiddenInputs");
+
+        function attachRemoveHandlers() {
+            document.querySelectorAll(".btnRemoveGrade").forEach(btn => {
+                btn.onclick = function () {
+                    const row = this.closest("tr");
+
+                    if (isEditMode) {
+                        const id = this.dataset.id;
+                        fetch('@Url.Action("RemoveGradeDetail", "ExamType")', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                            body: `id=${id}`
+                        })
+                        .then(res => res.json())
+                        .then(data => {
+                            if (data.success) row.remove();
+                        });
+                    } else {
+                        row.remove();
+                    }
+                };
+            });
+        }
+
+        document.getElementById("btnAddGrade").addEventListener("click", function () {
+            const title = gradeTitleInput.value.trim();
+            if (!title) return;
+
+            if (isEditMode) {
+                fetch('@Url.Action("AddGradeDetail", "ExamType")', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: `examTypeId=${examTypeId}&title=${encodeURIComponent(title)}`
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        const row = document.createElement("tr");
+                        row.dataset.id = data.id;
+                        row.innerHTML = `
+                            <td>${data.title}</td>
+                            <td><button type="button" class="btn btn-outline-danger btn-sm btnRemoveGrade" data-id="${data.id}">Remove</button></td>
+                        `;
+                        gradeTitleBody.appendChild(row);
+                        attachRemoveHandlers();
+                        gradeTitleInput.value = "";
+                    }
+                });
+            } else {
+                const row = document.createElement("tr");
+                row.innerHTML = `
+                    <td>${title}</td>
+                    <td><button type="button" class="btn btn-outline-danger btn-sm btnRemoveGrade">Remove</button></td>
+                `;
+                gradeTitleBody.appendChild(row);
+
+                const hidden = document.createElement("input");
+                hidden.type = "hidden";
+                hidden.name = "GradeTitleList";
+                hidden.value = title;
+                gradeHiddenInputs.appendChild(hidden);
+
+                row.querySelector(".btnRemoveGrade").onclick = function () {
+                    row.remove();
+                    hidden.remove();
+                };
+
+                gradeTitleInput.value = "";
+            }
+        });
+
+        attachRemoveHandlers();
+    </script>
+}

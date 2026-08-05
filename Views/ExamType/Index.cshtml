@@ -3,34 +3,38 @@
 	ViewData["Title"] = "Exam Type";
 }
 
-<div class="d-flex justify-content-between aligh-items-center mb-3">
-	<h4 class="fw-bold mb-0">Exam Type</h4>
-	<div class="d-flex gap-2">
-		<a asp-action="ExamTypeInsert" class="btn btn-primary">ADD</a>
-		<button type="button" id="btnDownload" class="btn btn-outline-secondary">Download</button>
-	</div>
-</div> 
+<h4 class="fw-bold">Exam Type</h4>
+<p class="text-muted">Dashboard / Exam Type</p>
 
 <div class="card shadow-sm">
 	<div class="card-body">
-		<div class="d-flex justify-content-between aligh-items-center mb-3 flex-wrap gap-2">
-			<h5 class="mb-0">EXAM TYPE LIST</h5>
-			<div class="input-group input-group-sm" style="max-width:250px;">
-				<input type="text" id="serchBox" class="form-control" placeholder="Search..."/>
+		<div class="d-flex justify-content-between align-items-center mb-3">
+			<h5 class="mb-0">Exam  List</h5>
+			<div class="d-flex gap-2">
+				<a asp-action="AddEdit" class="btn btn-primary btn-sm">ADD</a>
+				<button type="button" id="btnDownload" class="btn btn-outline-secondary btn-sm">Download</button>
 			</div>
-			<div class="d-flex aligh-items-center gap-2">
+		</div>
+
+		<div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+			<div class="d-flex align-items-center gap-2">
 				<span>Show</span>
 				<select id="pageSizeSelect" class="form-select form-select-sm" style="width:80px;">
 					<option value="10">10</option>
 					<option value="25">25</option>
-					<option value="50">50</option>
+					<option value="50" selected>50</option>
 					<option value="100">100</option>
-					<option value="9999">ALL</option>
+					<option value="99999">All</option>
 				</select>
 				<span>entries</span>
 			</div>
+			<div class="input-group input-group-sm" style="max-width:250px;">
+				<span class="input-group-text"><i class="bi bi-search"></i></span>
+				<input type="text" id="searchBox" class="form-control" placeholder="search" />
+			</div>
 		</div>
 	</div>
+	
 
 	<div id="examTypeList"
       @foreach (var item in Model)
@@ -39,6 +43,7 @@
 			<div class="mb-2">
 				<span class="badge bg-secondary fs-6">@item.Id</span>
 			</div>
+					<div class="row mb-3">
 			<div class="row-mb-3">
 				<small class="text-muted d-block">Is Lead ?</small>
 				<strong>@(item.IsLeadChecked ? "Yes" : "No ")</strong>
@@ -49,9 +54,10 @@
 			</div>
 			<div class="col-md-3">
 				<small class="text-muted d-block">Is Registration ?</small>
-				<strong>@(item.IsRegistrartionChecked ? "Yes" : "No")</strong>
+					<strong>@(item.IsRegistrationChecked ? "Yes" : "No")</strong>
 			</div>
-		</div>
+			</div>
+		
 		<div class="row mb-3">
 			<div class="col-md-3">
 				<small class="text-muted d-block">Is Coaching</small>
@@ -70,7 +76,7 @@
 				<strong>@(item.IsProfessionalChecked ? "Yes" : "No")</strong>
 			</div>
 		</div>
-
+	</div>
 		<div class="row mb-3">
 			<div class="col-md-3">
 				<small class="text-muted d-block">Is English Test ?</small>
@@ -88,7 +94,7 @@
 
 		<hr />
 		<div class="d-flex gap-2">
-			<a asp-action="ExamTypeEdit" asp-route-id="@item.Id" class="btn btn-outline-primary btn-sm">
+			<a asp-action="AddEdit" asp-route-id="@item.Id" class="btn btn-outline-primary btn-sm">
 				<i class="bi bi-pencil"></i> Edit
 			</a>
 
@@ -96,7 +102,7 @@
 				<input type="hidden" name="id" value="@item.Id"/>
 				<input type="hidden" name="status" value="@item.Id"/>
 				<button type="submit" class="btn btn-outline-danger btn-sm" >
-                 <i class="bi bi-slash-circle"></i>@(item.StatusFlag == "A" ? "I" : "A")"/>
+                 <i class="bi bi-slash-circle"></i>@(item.StatusFlag == "A" ? " InActive" : "Active")
 				 </button>
 			</form>
 			<form asp-action="Delete" method="post" class="d-inline" onsubmit="return confirm('DElete this record?');"?>
