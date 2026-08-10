@@ -41,18 +41,6 @@ namespace ActivitiesManagement.Controllers
             if(string.IsNullOrWhiteSpace(model.Title) || model.ExamTypeId == 0)
             {
                 ViewBag.ExamTypeList = _repo.GetExamTypeDropDown();
-                ModelState.AddModelError("", "Exam Type And Title are required.. ");
-                return View(model);
-            }
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult AddEdit(ExamProvider model)
-        {
-            if(string.IsNullOrWhiteSpace(model.Title) || model.ExamTypeId == 0)
-            {
-                ViewBag.ExamTypeList = _repo.GetExamTypeDropDown();
                 ModelState.AddModelError("", "Exam Type and Title are required..");
                 return View(model);
             }

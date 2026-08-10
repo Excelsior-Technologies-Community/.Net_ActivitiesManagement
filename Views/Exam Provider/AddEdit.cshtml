@@ -1,0 +1,54 @@
+﻿@model ActivitiesManagement.Models.ExamProvider
+@{
+	ViewData["Title"] = Model.Id == 0 ? "Add Exam Provider" : "Edit Exam Provider";
+	var examTypes = ViewBag.ExamTypeList as List<ActivitiesManagement.Models.ExamTypeLookup>;
+}
+
+<div class="d-flex justify-content-between aligh-items-center mb-3">
+	<div>
+		<h4 class="fw-bold mb-0">@Model.Id == 0 ? "ADD" : "EDIT") EXAM PROVIDER</h4>
+		<small class="text-muted">Dashboard / Exam Provider / @(Model.Id == 0 ? "Add" : "Edit") Exam Provider</small>
+	</div>
+	<a asp-action="Index" class="btn btn-primary">BACK</a>
+</div>
+
+<div class="card shadow-sm">
+	<div class="card-body">
+		<form asp-action="AddEdit" method="post">
+			@Html.AntiForgeryToken()
+			<input type="hidden" name="Id" value="@Model.Id"/>
+
+			<div class="mb-3">
+				<label class="form-label">Exam Type<span class="text-danger">*</span></label>
+				<select name="ExamTypeId" class="form-select" required>
+					<option value="">-- Select Exam Type --</option>
+					@foreach (var et in examTypes)
+					{
+						<option value="@et.Id" selected="@(et.Id == Model.ExamTypeId)">@et.Title</option>
+					}
+				</select>
+			</div>
+
+			<div class="mb-3">
+				<label class="form-label">Exam Provider (Title)<span class="text-danger">*</span></label>
+				<input type="text" name="Title" value="@Model.Title" class="form-control" placeholder="Enter Exam Provider" required/>
+			</div>
+
+
+			<div class="mb-3">
+				<label class="form-label">Website</label>
+				<input type="text" name="Website" value="@Model.Website" class="form-control" placeholder="Enter Website URL"/>
+			</div>
+
+			<div class="mb-3">
+				<label class="form-label">Description</label>
+				<textarea name="Description" class="form-control" rows="3" placeholder="Enter Website URL"/>
+			</div>
+
+			<div class="d-flex gap-2">
+				<button type="submit" class="btn btn-primary">Save</button>
+				<a asp-action="Index" class="btn btn-danger">Cancel</a>
+			</div>
+		</form>
+	</div>
+</div>
