@@ -1,0 +1,65 @@
+﻿@model ActivitiesManagement.Models.ExamProvider
+@{
+    bool isEdit = Model.Id != 0;
+    ViewData["Title"] = isEdit ? "Edit Exam Provider" : "Add Exam Provider";
+    var examTypes = ViewBag.ExamTypeList as List<ActivitiesManagement.Models.ExamTypeLookup>;
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <div>
+        <h4 class="fw-bold mb-0">@(isEdit ? "EDIT" : "ADD") EXAM PROVIDER</h4>
+        <small class="text-muted">Dashboard / Exam Provider / @(isEdit ? "Edit" : "Add") Exam Provider</small>
+    </div>
+    <a asp-action="Index" class="btn btn-primary">BACK</a>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        <form asp-action="AddEdit" method="post" id="examProviderForm">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="Id" value="@Model.Id" />
+
+            <div class="row mb-3">
+                <div class="col-md-4">
+                    <label class="form-label">Exam Type <span class="text-danger">*</span></label>
+                    <select name="ExamTypeID" class="form-select" required>
+                        <option value="">Select Exam Type</option>
+                        @if (examTypes != null)
+                        {
+                            @foreach (var et in examTypes)
+                            {
+                                <option value="@et.Id" selected="@(et.Id == Model.ExamTypeId)">@et.Title</option>
+                            }
+                        }
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">Exam Provider <span class="text-danger">*</span></label>
+                    <input type="text" name="Title" value="@Model.Title" class="form-control" placeholder="Enter Exam Provider" required />
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">Website</label>
+                    <input type="text" name="Website" value="@Model.Website" class="form-control" placeholder="Enter Website" />
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Description</label>
+                <textarea name="Description" class="form-control" rows="3" placeholder="Enter Description">@Model.Description</textarea>
+            </div>
+
+            @if (isEdit)
+            {
+                <button type="submit" class="btn btn-primary">Update</button>
+            }
+            else
+            {
+                <div class="d-flex gap-2">
+                    <button type="submit" name="action" value="save" class="btn btn-primary">Save</button>
+                    <button type="submit" name="action" value="saveAndAddAnother" class="btn btn-success">Save & Add Another</button>
+                    <a asp-action="Index" class="btn btn-danger">Cancel</a>
+                </div>
+            }
+        </form>
+    </div>
+</div>

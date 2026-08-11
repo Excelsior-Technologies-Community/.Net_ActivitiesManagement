@@ -31,7 +31,8 @@ namespace ActivitiesManagement.DataAccess
         {
             ExamProvider item = null;
             using var con = new SqlConnection(_connectionString);
-            using var cmd = new SqlCommand("usp_ExaamProvider_GetById", con) { CommandType = CommandType.StoredProcedure };
+            using var cmd = new SqlCommand("usp_ExamProvider_GetById", con) { CommandType = CommandType.StoredProcedure };
+            cmd.Parameters.AddWithValue("@Id", id);
             con.Open();
             using var dr = cmd.ExecuteReader();
             if(dr.Read())
@@ -102,7 +103,7 @@ namespace ActivitiesManagement.DataAccess
         {
             var list = new List<ExamTypeLookup>();
             using var con = new SqlConnection(_connectionString);
-            using var cmd = new SqlCommand("usp_ExamTypw_GetAllActive", con) { CommandType = CommandType.StoredProcedure };
+            using var cmd = new SqlCommand("usp_ExamType_GetAllActive", con) { CommandType = CommandType.StoredProcedure };
             con.Open();
             using var dr = cmd.ExecuteReader();
             while (dr.Read())
