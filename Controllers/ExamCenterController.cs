@@ -44,5 +44,74 @@ namespace ActivitiesManagement.Controllers
 
             return View(model);
         }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult AddEdit(ExamCenter model, string action)
+        {
+            if(string.IsNullOrWhiteSpace(model.ExamCenterName) || model.ExamProviderId == 0)
+            {
+                ViewBag.ExamProviderList = _repo.GetExamProviderDropDown();
+                ViewBag.CountryList = _repo.GetCountryDropDown();
+                ViewBag.StateList = model.CountryId > 0 ? _repo.GetStateDropDown(model.CountryId) : new List<DropDownItem>();
+                ViewBag.CityList = model.StateId > 0 ?_repo.GetCityDropDown(model.StateId) : new List<DropDownItem>();
+                ViewBag.AreaList = model.CityId > 0 ? _repo.GetAreaDropDown(model.CityId) : new List<DropDownItem>();
+                ModelState.AddModelError("", "Center Name and Exam Provider Are Required..");
+                return View(model);
+            }
+
+            if(model.Id == 0)
+            {
+                _repo.Insert(model, CurrentUser);
+                TempData["SaveMessage"] = "Exam Center Saved SuccesFully.";
+            }
+            else
+            {
+                _repo.Update(model, CurrentUser);
+                TempData["SaveMessge"] = "Exam Center Updated SuccesFully.";
+            }
+
+            TempData["ShowSaveModalOnIndex"] = true;
+
+            if (action == "saveAndAddAnother")
+                return RedirectToAction("AddEdit");
+
+            return RedirectToAction("Index");
+        }
+
+        [HttpPost]
+        public IActionResult ChangeStatus(int id,string status)
+        {
+            _repo.ChangeStatus(id, status, CurrentUser);
+            return RedirectToAction("Index");
+        }
+
+        [HttpPost]
+        public IActionResult Delete(int id)
+        {
+            _repo.Delete(id);
+            return RedirectToAction("Index");
+        }
+
+        [HttpGet]
+        public JsonResult GetState(long countryId)
+        {
+            var states = _repo.GetStateDropDown(countryId);
+            return Json(states);
+        }
+
+        [HttpGet]
+        public JsonResult GetCities(long stateId)
+        {
+            var cities = _repo.GetCityDropDown(stateId);
+            return Json(cities);
+        }
+
+        [HttpGet]
+        public JsonResult GetAreas(long cityId)
+        {
+            var areas = _repo.GetAreaDropDown(cityId);
+            return Json(areas);
+        }
     }
 }

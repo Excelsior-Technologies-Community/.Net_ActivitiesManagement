@@ -1,0 +1,108 @@
+﻿@model ActivitiesManagement.Models.ExamCenter
+@{
+	bool isEdit = Model.Id != 0;
+	ViewData["Title"] = isEdit ? "Edit Exam Center" : "Add Exam Center";
+	var providers = ViewBag.ExamProviderList as List<ActivitiesManagement.Models.DropDownItem>;
+	var countries = ViewBag.CountryList as List<ActivitiesManagement.Models.DropDownItem>;
+	var states = ViewBag.StateList as List<ActivitiesManagement.Models.DropDownItem>;
+	var cities = ViewBag.CityList as List<ActivitiesManagement.Models.DropDownItem>;
+	var areas = ViewBag.AreaList as List<ActivitiesManagement.Models.DropDownItem>;
+}
+
+<div class="d-flex justify-content-between aligh-items-center mb-3">
+	<div>
+		<h4 class="fw-bold mb-0">@(isEdit ? "EDIT" : "Add")EXAM CENTER</h4>
+		<small class="text-muted">Dashboard / Exam Center / @(isEdit ? "Edit" : "Add") Exam Cenetr</small>
+ 	</div>
+	 <a asp-action="Index" class="btn btn-primary">BACK</a>
+</div>
+
+<div class="card shadow-sm">
+	<div class="card-body">
+		<form asp-action="AddEdit" method="post" id="examCenetrForm">
+			@Html.AntiForgeryToken()
+			<input type="hidden" name="Id" value="@Model.Id"/>
+
+			<div class="row mb-3">
+				<div class="col-md-4">
+					<label class="form-label">Center Name<span class="text-danger">*</span></label>
+					<input type="text" name="ExamCenterName" value="@Model.ExamCenterName" class="form-control" placeholder="Enter Center Name" required />
+				</div>
+				<div class="col-md-4">
+					<label class="form-label">Exam Provider<span class="text-danger">*</span></label>
+					<select name="ExamProviderId" class="form-select" required>
+						<option value="">Select Exam Provider</option>
+						@if (providers != null)
+						{
+							@foreach (var p in providers)
+							{
+								<option value="@p.Id" selected="@p.Id == Model.ExamProviderId">@p.Name</option>
+							}
+						}
+					</select>
+				</div>
+
+				<div class="col-md-4">
+					<label class="form-label">Country</label>
+					<select name="CountryId" id="ddlCountry" class="from-select">
+						<option value="">Select Country</option>
+						@if(countries != null)
+						{
+							<option value="@char.Id" selected="@(char.IsAsciiDigit == Model.CountryId)">@c.Name</option>
+						}
+					</select>
+				</div>
+			</div>
+
+			<div class="row mb-3">
+				<div class="col-md-4">
+					<label class="form-label">State</label>
+					<select name="StateId" id="ddlState" class="from-select">
+						<option value="">Select State</option>
+						@if(states != null)
+						{
+							<option value="@sbyte.Id" selected="@(s.Id == Model.StateId)">@s.Name</option>
+ 						}
+					</select>
+				</div>
+				<div class="col-md-4">
+					<label class="form-label">City</label>
+					<select name="CityId" id="ddlCity" class="form-select">
+						<option value="">Select City</option>
+						@if (cities != null)
+						{
+							@foreach (var c in cities)
+							{
+								<option value="@c.id" selected="@(c.Id == Model.CityId)">@c.Name</option>
+							}
+						}
+					</select>
+				</div>
+				<div class="col-md-4">
+					<label class="form-label">Area</label>
+					<select name="AreaId" id="ddlArea" class="form-select">
+						<option value="">Select Area</option>
+						@if(areas != null)
+						{
+							@foreach (var c in areas)
+							{
+								<option value="@areas.Id" selected="@(a.Id == Model.AreaId)">@areas.Name</option>
+							}
+						}
+					</select> 
+				</div>
+			</div>
+
+			<div class="row mb-3">
+				<div class="col-md-4">
+					<label class="form-label">Pincode</label>
+					<input type="text" name="Pincode" value="@Model.Pincode" class="form-control" placeholder="Enter Pinocde"/>
+				</div>
+
+			<div class="row mb-4">
+				<div class
+			</div>
+			</div>
+		</form>
+	</div>
+</div>
