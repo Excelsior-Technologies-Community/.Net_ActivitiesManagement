@@ -1,4 +1,5 @@
 using ActivitiesManagement.DataAccess;
+using ActivitiesManagement.Repositories;
 
 namespace ActivitiesManagement
 {

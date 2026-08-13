@@ -1,108 +1,188 @@
 ﻿@model ActivitiesManagement.Models.ExamCenter
 @{
-	bool isEdit = Model.Id != 0;
-	ViewData["Title"] = isEdit ? "Edit Exam Center" : "Add Exam Center";
-	var providers = ViewBag.ExamProviderList as List<ActivitiesManagement.Models.DropDownItem>;
-	var countries = ViewBag.CountryList as List<ActivitiesManagement.Models.DropDownItem>;
-	var states = ViewBag.StateList as List<ActivitiesManagement.Models.DropDownItem>;
-	var cities = ViewBag.CityList as List<ActivitiesManagement.Models.DropDownItem>;
-	var areas = ViewBag.AreaList as List<ActivitiesManagement.Models.DropDownItem>;
+    bool isEdit = Model.Id != 0;
+    ViewData["Title"] = isEdit ? "Edit Exam Center" : "Add Exam Center";
+    var providers = ViewBag.ExamProviderList as List<ActivitiesManagement.Models.DropdownItem>;
+    var countries = ViewBag.CountryList as List<ActivitiesManagement.Models.DropdownItem>;
+    var states = ViewBag.StateList as List<ActivitiesManagement.Models.DropdownItem>;
+    var cities = ViewBag.CityList as List<ActivitiesManagement.Models.DropdownItem>;
+    var areas = ViewBag.AreaList as List<ActivitiesManagement.Models.DropdownItem>;
 }
 
-<div class="d-flex justify-content-between aligh-items-center mb-3">
-	<div>
-		<h4 class="fw-bold mb-0">@(isEdit ? "EDIT" : "Add")EXAM CENTER</h4>
-		<small class="text-muted">Dashboard / Exam Center / @(isEdit ? "Edit" : "Add") Exam Cenetr</small>
- 	</div>
-	 <a asp-action="Index" class="btn btn-primary">BACK</a>
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <div>
+        <h4 class="fw-bold mb-0">@(isEdit ? "EDIT" : "ADD") EXAM CENTER</h4>
+        <small class="text-muted">Dashboard / Exam Center / @(isEdit ? "Edit" : "Add") Exam Center</small>
+    </div>
+    <a asp-action="Index" class="btn btn-primary">BACK</a>
 </div>
 
 <div class="card shadow-sm">
-	<div class="card-body">
-		<form asp-action="AddEdit" method="post" id="examCenetrForm">
-			@Html.AntiForgeryToken()
-			<input type="hidden" name="Id" value="@Model.Id"/>
+    <div class="card-body">
+        <form asp-action="AddEdit" method="post" id="examCenterForm">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="Id" value="@Model.Id" />
 
-			<div class="row mb-3">
-				<div class="col-md-4">
-					<label class="form-label">Center Name<span class="text-danger">*</span></label>
-					<input type="text" name="ExamCenterName" value="@Model.ExamCenterName" class="form-control" placeholder="Enter Center Name" required />
-				</div>
-				<div class="col-md-4">
-					<label class="form-label">Exam Provider<span class="text-danger">*</span></label>
-					<select name="ExamProviderId" class="form-select" required>
-						<option value="">Select Exam Provider</option>
-						@if (providers != null)
-						{
-							@foreach (var p in providers)
-							{
-								<option value="@p.Id" selected="@p.Id == Model.ExamProviderId">@p.Name</option>
-							}
-						}
-					</select>
-				</div>
+            <div class="row mb-3">
+                <div class="col-md-4">
+                    <label class="form-label">Center Name <span class="text-danger">*</span></label>
+                    <input type="text" name="ExamCenterName" value="@Model.ExamCenterName" class="form-control" placeholder="Enter Center Name" required />
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">Exam Provider <span class="text-danger">*</span></label>
+                    <select name="ExamProviderId" class="form-select" required>
+                        <option value="">Select Exam Provider</option>
+                        @if (providers != null)
+                        {
+                            @foreach (var p in providers)
+                            {
+                                <option value="@p.Id" selected="@(p.Id == Model.ExamProviderId)">@p.Name</option>
+                            }
+                        }
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">Country</label>
+                    <select name="CountryId" id="ddlCountry" class="form-select">
+                        <option value="">Select Country</option>
+                        @if (countries != null)
+                        {
+                            @foreach (var c in countries)
+                            {
+                                <option value="@c.Id" selected="@(c.Id == Model.CountryId)">@c.Name</option>
+                            }
+                        }
+                    </select>
+                </div>
+            </div>
 
-				<div class="col-md-4">
-					<label class="form-label">Country</label>
-					<select name="CountryId" id="ddlCountry" class="from-select">
-						<option value="">Select Country</option>
-						@if(countries != null)
-						{
-							<option value="@char.Id" selected="@(char.IsAsciiDigit == Model.CountryId)">@c.Name</option>
-						}
-					</select>
-				</div>
-			</div>
+            <div class="row mb-3">
+                <div class="col-md-4">
+                    <label class="form-label">State</label>
+                    <select name="StateId" id="ddlState" class="form-select">
+                        <option value="">Select State</option>
+                        @if (states != null)
+                        {
+                            @foreach (var s in states)
+                            {
+                                <option value="@s.Id" selected="@(s.Id == Model.StateId)">@s.Name</option>
+                            }
+                        }
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">City</label>
+                    <select name="CityId" id="ddlCity" class="form-select">
+                        <option value="">Select City</option>
+                        @if (cities != null)
+                        {
+                            @foreach (var c in cities)
+                            {
+                                <option value="@c.Id" selected="@(c.Id == Model.CityId)">@c.Name</option>
+                            }
+                        }
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">Area</label>
+                    <select name="AreaId" id="ddlArea" class="form-select">
+                        <option value="">Select Area</option>
+                        @if (areas != null)
+                        {
+                            @foreach (var a in areas)
+                            {
+                                <option value="@a.Id" selected="@(a.Id == Model.AreaId)">@a.Name</option>
+                            }
+                        }
+                    </select>
+                </div>
+            </div>
 
-			<div class="row mb-3">
-				<div class="col-md-4">
-					<label class="form-label">State</label>
-					<select name="StateId" id="ddlState" class="from-select">
-						<option value="">Select State</option>
-						@if(states != null)
-						{
-							<option value="@sbyte.Id" selected="@(s.Id == Model.StateId)">@s.Name</option>
- 						}
-					</select>
-				</div>
-				<div class="col-md-4">
-					<label class="form-label">City</label>
-					<select name="CityId" id="ddlCity" class="form-select">
-						<option value="">Select City</option>
-						@if (cities != null)
-						{
-							@foreach (var c in cities)
-							{
-								<option value="@c.id" selected="@(c.Id == Model.CityId)">@c.Name</option>
-							}
-						}
-					</select>
-				</div>
-				<div class="col-md-4">
-					<label class="form-label">Area</label>
-					<select name="AreaId" id="ddlArea" class="form-select">
-						<option value="">Select Area</option>
-						@if(areas != null)
-						{
-							@foreach (var c in areas)
-							{
-								<option value="@areas.Id" selected="@(a.Id == Model.AreaId)">@areas.Name</option>
-							}
-						}
-					</select> 
-				</div>
-			</div>
+            <div class="row mb-3">
+                <div class="col-md-4">
+                    <label class="form-label">Pincode</label>
+                    <input type="text" name="Pincode" value="@Model.Pincode" class="form-control" placeholder="Enter Pincode" />
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">Email Address</label>
+                    <input type="email" name="Email" value="@Model.Email" class="form-control" placeholder="Enter Email Address" />
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">Mobile No</label>
+                    <input type="text" name="MobileNo" value="@Model.MobileNo" class="form-control" placeholder="Enter Mobile No" />
+                </div>
+            </div>
 
-			<div class="row mb-3">
-				<div class="col-md-4">
-					<label class="form-label">Pincode</label>
-					<input type="text" name="Pincode" value="@Model.Pincode" class="form-control" placeholder="Enter Pinocde"/>
-				</div>
+            <div class="mb-3">
+                <label class="form-label">Address</label>
+                <textarea name="Address" class="form-control" rows="3" placeholder="Enter Address">@Model.Address</textarea>
+            </div>
 
-			<div class="row mb-4">
-				<div class
-			</div>
-			</div>
-		</form>
-	</div>
+            @if (isEdit)
+            {
+                <button type="submit" class="btn btn-primary">Update</button>
+            }
+            else
+            {
+                <div class="d-flex gap-2">
+                    <button type="submit" name="action" value="save" class="btn btn-primary">Save</button>
+                    <button type="submit" name="action" value="saveAndAddAnother" class="btn btn-success">Save & Add Another</button>
+                    <a asp-action="Index" class="btn btn-danger">Cancel</a>
+                </div>
+            }
+        </form>
+    </div>
 </div>
+
+@section Scripts {
+    <script>
+        const ddlCountry = document.getElementById("ddlCountry");
+        const ddlState = document.getElementById("ddlState");
+        const ddlCity = document.getElementById("ddlCity");
+        const ddlArea = document.getElementById("ddlArea");
+
+        function populateSelect(select, items, selectedId, placeholder) {
+            select.innerHTML = `<option value="">${placeholder}</option>`;
+            items.forEach(item => {
+                const opt = document.createElement("option");
+                opt.value = item.id;
+                opt.textContent = item.name;
+                if (selectedId && item.id == selectedId) opt.selected = true;
+                select.appendChild(opt);
+            });
+        }
+
+        ddlCountry.addEventListener("change", function () {
+            ddlState.innerHTML = '<option value="">Select State</option>';
+            ddlCity.innerHTML = '<option value="">Select City</option>';
+            ddlArea.innerHTML = '<option value="">Select Area</option>';
+
+            if (!this.value) return;
+
+            fetch('@Url.Action("GetStates", "ExamCenter")?countryId=' + this.value)
+                .then(res => res.json())
+                .then(data => populateSelect(ddlState, data, null, "Select State"));
+        });
+
+        ddlState.addEventListener("change", function () {
+            ddlCity.innerHTML = '<option value="">Select City</option>';
+            ddlArea.innerHTML = '<option value="">Select Area</option>';
+
+            if (!this.value) return;
+
+            fetch('@Url.Action("GetCities", "ExamCenter")?stateId=' + this.value)
+                .then(res => res.json())
+                .then(data => populateSelect(ddlCity, data, null, "Select City"));
+        });
+
+        ddlCity.addEventListener("change", function () {
+            ddlArea.innerHTML = '<option value="">Select Area</option>';
+
+            if (!this.value) return;
+
+            fetch('@Url.Action("GetAreas", "ExamCenter")?cityId=' + this.value)
+                .then(res => res.json())
+                .then(data => populateSelect(ddlArea, data, null, "Select Area"));
+        });
+    </script>
+}

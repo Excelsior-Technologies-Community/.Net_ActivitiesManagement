@@ -2,7 +2,7 @@
 using System.Data;
 using ActivitiesManagement.Models;
 
-namespace ActivitiesManagement.DataAccess
+namespace ActivitiesManagement.Repositories
 {
     public class ExamCenterRepository
     {
@@ -20,7 +20,7 @@ namespace ActivitiesManagement.DataAccess
             using var cmd = new SqlCommand("usp_ExamCenter_GetAll", con) { CommandType = CommandType.StoredProcedure };
             con.Open();
             using var dr = cmd.ExecuteReader();
-            while(dr.Read())
+            while (dr.Read())
             {
                 list.Add(Map(dr));
             }
@@ -35,29 +35,29 @@ namespace ActivitiesManagement.DataAccess
             cmd.Parameters.AddWithValue("@Id", id);
             con.Open();
             using var dr = cmd.ExecuteReader();
-            if(dr.Read())
+            if (dr.Read())
             {
                 item = Map(dr);
             }
             return item;
         }
 
-        public int Insert(ExamCenter model,string createUser)
+        public int Insert(ExamCenter model, string createUser)
         {
             using var con = new SqlConnection(_connectionString);
             using var cmd = new SqlCommand("usp_ExamCenter_Insert", con) { CommandType = CommandType.StoredProcedure };
 
             cmd.Parameters.AddWithValue("@ExamTypeId", (object)model.ExamTypeId ?? DBNull.Value);
-            cmd.Parameters.AddWithValue("@ExamProviderId", model.ExamTypeId);
-            cmd.Parameters.AddWithValue("@EcamCenterName", model.ExamCenterName ?? "");
+            cmd.Parameters.AddWithValue("@ExamProviderId", model.ExamProviderId);
+            cmd.Parameters.AddWithValue("@ExamCenterName", model.ExamCenterName ?? "");
             cmd.Parameters.AddWithValue("@Email", (object)model.Email ?? DBNull.Value);
             cmd.Parameters.AddWithValue("@MobileNo", (object)model.MobileNo ?? DBNull.Value);
-            cmd.Parameters.AddWithValue("@Address",(object)model.Address ?? DBNull.Value);
+            cmd.Parameters.AddWithValue("@Address", (object)model.Address ?? DBNull.Value);
             cmd.Parameters.AddWithValue("@CountryId", model.CountryId);
             cmd.Parameters.AddWithValue("@StateId", model.StateId);
-            cmd.Parameters.AddWithValue("@CityId",model.CityId);
-            cmd.Parameters.AddWithValue("@AreaId",model.AreaId);
-            cmd.Parameters.AddWithValue("@Pincode",(object)model.Pincode ?? DBNull.Value);
+            cmd.Parameters.AddWithValue("@CityId", model.CityId);
+            cmd.Parameters.AddWithValue("@AreaId", model.AreaId);
+            cmd.Parameters.AddWithValue("@Pincode", (object)model.Pincode ?? DBNull.Value);
             cmd.Parameters.AddWithValue("@CreateUser", createUser ?? "");
 
             var outputParam = new SqlParameter("@NewId", SqlDbType.Int) { Direction = ParameterDirection.Output };
@@ -74,9 +74,10 @@ namespace ActivitiesManagement.DataAccess
             using var con = new SqlConnection(_connectionString);
             using var cmd = new SqlCommand("usp_ExamCenter_Update", con) { CommandType = CommandType.StoredProcedure };
 
+            cmd.Parameters.AddWithValue("@Id", model.Id);
             cmd.Parameters.AddWithValue("@ExamTypeId", (object)model.ExamTypeId ?? DBNull.Value);
-            cmd.Parameters.AddWithValue("@ExamProviderId", model.ExamTypeId);
-            cmd.Parameters.AddWithValue("@EcamCenterName", model.ExamCenterName ?? "");
+            cmd.Parameters.AddWithValue("@ExamProviderId", model.ExamProviderId);
+            cmd.Parameters.AddWithValue("@ExamCenterName", model.ExamCenterName ?? "");
             cmd.Parameters.AddWithValue("@Email", (object)model.Email ?? DBNull.Value);
             cmd.Parameters.AddWithValue("@MobileNo", (object)model.MobileNo ?? DBNull.Value);
             cmd.Parameters.AddWithValue("@Address", (object)model.Address ?? DBNull.Value);
@@ -94,7 +95,7 @@ namespace ActivitiesManagement.DataAccess
         public void ChangeStatus(int id, string statusFlag, string updateUser)
         {
             using var con = new SqlConnection(_connectionString);
-            using var cmd = new SqlCommand("usp_Examcenter_ChangeStatus", con) { CommandType = CommandType.StoredProcedure };
+            using var cmd = new SqlCommand("usp_ExamCenter_ChangeStatus", con) { CommandType = CommandType.StoredProcedure };
             cmd.Parameters.AddWithValue("@Id", id);
             cmd.Parameters.AddWithValue("@StatusFlag", statusFlag);
             cmd.Parameters.AddWithValue("@UpdateUser", updateUser ?? "");
@@ -111,52 +112,53 @@ namespace ActivitiesManagement.DataAccess
             cmd.ExecuteNonQuery();
         }
 
-        public List<DropDownItem> GetExamProviderDropDown()
+
+        public List<DropdownItem> GetExamProviderDropdown()
         {
-            var list = new List<DropDownItem>();
+            var list = new List<DropdownItem>();
             using var con = new SqlConnection(_connectionString);
-            using var cmd = new SqlCommand("usp_ExamProvider_GetAllActiveDropDown", con) { CommandType = CommandType.StoredProcedure };
+            using var cmd = new SqlCommand("usp_ExamProvider_GetAllActiveDropdown", con) { CommandType = CommandType.StoredProcedure };
             con.Open();
             using var dr = cmd.ExecuteReader();
             while (dr.Read())
             {
-                list.Add(new DropDownItem { Id = Convert.ToInt64(dr["ID"]), Name = dr["Title"]?.ToString() });
+                list.Add(new DropdownItem { Id = Convert.ToInt64(dr["ID"]), Name = dr["Title"]?.ToString() });
             }
             return list;
         }
 
-        public List<DropDownItem> GetCountryDropDown()
+       public List<DropdownItem> GetCountryDropdown()
         {
-            var list = new List<DropDownItem>();
+            var list = new List<DropdownItem>();
             using var con = new SqlConnection(_connectionString);
             using var cmd = new SqlCommand("usp_Country_GetAllActive", con) { CommandType = CommandType.StoredProcedure };
             con.Open();
             using var dr = cmd.ExecuteReader();
-            while(dr.Read())
+            while (dr.Read())
             {
-                list.Add(new DropDownItem { Id = Convert.ToInt64(dr["ID"]), Name = dr["Title"]?.ToString() });
+                list.Add(new DropdownItem { Id = Convert.ToInt64(dr["ID"]), Name = dr["CountryName"]?.ToString() });
             }
             return list;
         }
 
-        public List<DropDownItem> GetStateDropDown(long countryId)
+        public List<DropdownItem> GetStateDropdown(long countryId)
         {
-            var list = new List<DropDownItem>();
+            var list = new List<DropdownItem>();
             using var con = new SqlConnection(_connectionString);
             using var cmd = new SqlCommand("usp_State_GetByCountryId", con) { CommandType = CommandType.StoredProcedure };
             cmd.Parameters.AddWithValue("@CountryId", countryId);
             con.Open();
             using var dr = cmd.ExecuteReader();
-            while(dr.Read())
+            while (dr.Read())
             {
-                list.Add(new DropDownItem { Id = Convert.ToInt64(dr["ID"]), Name = dr["Title"]?.ToString() });
+                list.Add(new DropdownItem { Id = Convert.ToInt64(dr["Id"]), Name = dr["StateName"]?.ToString() });
             }
             return list;
         }
 
-        public List<DropDownItem> GetCityDropDown(long stateId)
+        public List<DropdownItem> GetCityDropdown(long stateId)
         {
-            var list = new List<DropDownItem>();
+            var list = new List<DropdownItem>();
             using var con = new SqlConnection(_connectionString);
             using var cmd = new SqlCommand("usp_City_GetByStateId", con) { CommandType = CommandType.StoredProcedure };
             cmd.Parameters.AddWithValue("@StateId", stateId);
@@ -164,33 +166,33 @@ namespace ActivitiesManagement.DataAccess
             using var dr = cmd.ExecuteReader();
             while (dr.Read())
             {
-                list.Add(new DropDownItem { Id = Convert.ToInt64(dr["ID"]), Name = dr["Title"]?.ToString() });
+                list.Add(new DropdownItem { Id = Convert.ToInt64(dr["Id"]), Name = dr["CityName"]?.ToString() });
             }
             return list;
         }
 
-        public List<DropDownItem> GetAreaDropDown(long cityId)
+        public List<DropdownItem> GetAreaDropdown(long cityId)
         {
-            var list = new List<DropDownItem>();
+            var list = new List<DropdownItem>();
             using var con = new SqlConnection(_connectionString);
             using var cmd = new SqlCommand("usp_Area_GetByCityId", con) { CommandType = CommandType.StoredProcedure };
-            cmd.Parameters.AddWithValue("CityId", cityId);
+            cmd.Parameters.AddWithValue("@CityId", cityId);
             con.Open();
             using var dr = cmd.ExecuteReader();
             while (dr.Read())
             {
-                list.Add(new DropDownItem { Id = Convert.ToInt64(dr["ID"]), Name = dr["Title"]?.ToString() });
+                list.Add(new DropdownItem { Id = Convert.ToInt64(dr["Id"]), Name = dr["Area"]?.ToString() });
             }
             return list;
         }
 
-        public static ExamCenter Map(SqlDataReader dr)
+        private static ExamCenter Map(SqlDataReader dr)
         {
             return new ExamCenter
             {
                 Id = Convert.ToInt32(dr["ID"]),
                 ExamTypeId = dr["ExamTypeId"] == DBNull.Value ? null : Convert.ToInt64(dr["ExamTypeId"]),
-                ExamProviderId = dr["ExamTypeId"] == DBNull.Value ? 0 : Convert.ToInt64(dr["ExamProvider"]),
+                ExamProviderId = dr["ExamProviderId"] == DBNull.Value ? 0 : Convert.ToInt64(dr["ExamProviderId"]),
                 ExamProviderTitle = dr["ExamProviderTitle"]?.ToString(),
                 ExamCenterName = dr["ExamCenterName"]?.ToString(),
                 Email = dr["Email"]?.ToString(),

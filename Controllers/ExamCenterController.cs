@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using ActivitiesManagement.Models;
-using ActivitiesManagement.DataAccess;
+using ActivitiesManagement.Repositories;
 
 namespace ActivitiesManagement.Controllers
 {
@@ -24,23 +24,23 @@ namespace ActivitiesManagement.Controllers
         [HttpGet]
         public IActionResult AddEdit(int? id)
         {
-            ViewBag.ExamProviderList = _repo.GetExamProviderDropDown();
-            ViewBag.CountryId = _repo.GetCountryDropDown();
+            ViewBag.ExamProviderList = _repo.GetExamProviderDropdown();
+            ViewBag.CountryList = _repo.GetCountryDropdown();
 
-            if(id == null)
+            if (id == null)
             {
-                ViewBag.StateList = new List<DropDownItem>();
-                ViewBag.CityList = new List<DropDownItem>();
-                ViewBag.AreaList = new List<DropDownItem>();
+                ViewBag.StateList = new List<DropdownItem>();
+                ViewBag.CityList = new List<DropdownItem>();
+                ViewBag.AreaList = new List<DropdownItem>();
                 return View(new ExamCenter());
             }
 
             var model = _repo.GetById(id.Value);
             if (model == null) return NotFound();
 
-            ViewBag.StateList = model.CountryId > 0 ? _repo.GetStateDropDown(model.CountryId) : new List<DropDownItem>();
-            ViewBag.CityList = model.StateId > 0 ? _repo.GetCityDropDown(model.StateId) : new List<DropDownItem>();
-            ViewBag.AreaList = model.AreaId > 0 ? _repo.GetAreaDropDown(model.AreaId) : new List<DropDownItem>();
+            ViewBag.StateList = model.CountryId > 0 ? _repo.GetStateDropdown(model.CountryId) : new List<DropdownItem>();
+            ViewBag.CityList = model.StateId > 0 ? _repo.GetCityDropdown(model.StateId) : new List<DropdownItem>();
+            ViewBag.AreaList = model.CityId > 0 ? _repo.GetAreaDropdown(model.CityId) : new List<DropdownItem>();
 
             return View(model);
         }
@@ -49,26 +49,26 @@ namespace ActivitiesManagement.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult AddEdit(ExamCenter model, string action)
         {
-            if(string.IsNullOrWhiteSpace(model.ExamCenterName) || model.ExamProviderId == 0)
+            if (string.IsNullOrWhiteSpace(model.ExamCenterName) || model.ExamProviderId == 0)
             {
-                ViewBag.ExamProviderList = _repo.GetExamProviderDropDown();
-                ViewBag.CountryList = _repo.GetCountryDropDown();
-                ViewBag.StateList = model.CountryId > 0 ? _repo.GetStateDropDown(model.CountryId) : new List<DropDownItem>();
-                ViewBag.CityList = model.StateId > 0 ?_repo.GetCityDropDown(model.StateId) : new List<DropDownItem>();
-                ViewBag.AreaList = model.CityId > 0 ? _repo.GetAreaDropDown(model.CityId) : new List<DropDownItem>();
-                ModelState.AddModelError("", "Center Name and Exam Provider Are Required..");
+                ViewBag.ExamProviderList = _repo.GetExamProviderDropdown();
+                ViewBag.CountryList = _repo.GetCountryDropdown();
+                ViewBag.StateList = model.CountryId > 0 ? _repo.GetStateDropdown(model.CountryId) : new List<DropdownItem>();
+                ViewBag.CityList = model.StateId > 0 ? _repo.GetCityDropdown(model.StateId) : new List<DropdownItem>();
+                ViewBag.AreaList = model.CityId > 0 ? _repo.GetAreaDropdown(model.CityId) : new List<DropdownItem>();
+                ModelState.AddModelError("", "Center Name and Exam Provider are required.");
                 return View(model);
             }
 
-            if(model.Id == 0)
+            if (model.Id == 0)
             {
                 _repo.Insert(model, CurrentUser);
-                TempData["SaveMessage"] = "Exam Center Saved SuccesFully.";
+                TempData["SaveMessage"] = "Exam Center saved successfully.";
             }
             else
             {
                 _repo.Update(model, CurrentUser);
-                TempData["SaveMessge"] = "Exam Center Updated SuccesFully.";
+                TempData["SaveMessage"] = "Exam Center updated successfully.";
             }
 
             TempData["ShowSaveModalOnIndex"] = true;
@@ -80,7 +80,7 @@ namespace ActivitiesManagement.Controllers
         }
 
         [HttpPost]
-        public IActionResult ChangeStatus(int id,string status)
+        public IActionResult ChangeStatus(int id, string status)
         {
             _repo.ChangeStatus(id, status, CurrentUser);
             return RedirectToAction("Index");
@@ -93,25 +93,34 @@ namespace ActivitiesManagement.Controllers
             return RedirectToAction("Index");
         }
 
+
         [HttpGet]
-        public JsonResult GetState(long countryId)
+        public JsonResult GetStates(long countryId)
         {
-            var states = _repo.GetStateDropDown(countryId);
+            var states = _repo.GetStateDropdown(countryId);
             return Json(states);
         }
 
         [HttpGet]
         public JsonResult GetCities(long stateId)
         {
-            var cities = _repo.GetCityDropDown(stateId);
+            var cities = _repo.GetCityDropdown(stateId);
             return Json(cities);
         }
 
         [HttpGet]
         public JsonResult GetAreas(long cityId)
         {
-            var areas = _repo.GetAreaDropDown(cityId);
+            var areas = _repo.GetAreaDropdown(cityId);
             return Json(areas);
         }
     }
 }
+
+
+
+
+
+
+
+
