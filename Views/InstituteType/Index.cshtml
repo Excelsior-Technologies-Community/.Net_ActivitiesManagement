@@ -1,0 +1,78 @@
+﻿@model List<ActivitiesManagement.Models.InstituteType>
+@{
+	ViewData["Title"] = "Institute Type";
+}
+
+<style>
+	.exam-type-header {
+		background-color: #f1f3f5;
+		border-radius: 6px 6px 0 0;
+		padding: 1rem 1.25rem;
+	}
+
+	.exam-row {
+		background-color: #ffffff;
+		border: 1px solid #dee2e6;
+		border-radius: 6px;
+	}
+
+	.institute-grid {
+		display: grid;
+		grid-template-columns: 1.4fr 1fr 1.6fr 1fr;
+		column-gap: 1.5rem;
+		row-gap: 0.5rem;
+	}
+
+	@@media (max-width: 768px) {
+		.institute-grid {
+			grid-template-columns: repeat(2, 1fr);
+		}
+	}
+</style>
+
+<h4 class="fw-bold">INSTITUTE TYPE</h4>
+<p class="text-muted">Dashboard / Institute Type</p>
+
+<div class="card shadow-sm">
+	<div class="exam-type-header">
+		<div class="d-flex justify-content-between aligh-items-center mb-2">
+           <h5 class="mb-0">Institute Type List</h5>
+		   <div class="d-flex gap-2">
+			   <a asp-action="InstituteTypeInsert" class="btn btn-primary btn-sm">Add</a>
+			   <button type="button" id="btnDownload" class="btn btn-outline-secondary btn-sm">Download</button>
+		   </div>
+		</div>
+
+		<div class="d-flex justify-content-between aligh-items-center flex-wrap gap-2">
+			<div class="input-group	input-group-sm" style="max-width:250px;">
+				<span class="input-group-text"><i class="bg-info bi-serch"></i></span>
+				<input type="text" id="serchBox" class="form-control" placeholder="Serch" />
+			</div>
+
+			<div class="d-flex aligh-items-center gap-2">
+				<span>Show</span>
+				<select id="pageSizeSelect" class="form-select form-select-sm" style="width:80px;">
+					<option vlaue="10">10</option>
+					<option value="25">25</option>
+					<option value="50">50</option>
+					<option value="100">100</option>
+					<option value="9999">All</option>
+				</select>
+				<span>Entries</span>
+			</div>
+		</div>
+	</div>
+
+	<div class="card-body">
+		<div id="instituteTypeList">
+			@foreach (var item in Model)
+			{
+				<div class="exam-row p-3 mb-3" data-title="@item.Title?.ToLower()">
+					<div class="mb-2">
+						<span class="badge bg-secondary fs-6">@item.Id</span>
+					</div>
+				</div>
+			}
+		</div>
+	</div>
+</div>

@@ -21,6 +21,7 @@ namespace ActivitiesManagement
             builder.Services.AddScoped<ExamTypeRepository>();
             builder.Services.AddScoped<ExamProviderRepository>();
             builder.Services.AddScoped<ExamCenterRepository>();
+            builder.Services.AddScoped<InstituteTypeRepository>();
             var app = builder.Build();
 
             if (!app.Environment.IsDevelopment())
