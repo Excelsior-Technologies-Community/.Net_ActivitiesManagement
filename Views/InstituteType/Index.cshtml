@@ -1,78 +1,172 @@
 ﻿@model List<ActivitiesManagement.Models.InstituteType>
 @{
-	ViewData["Title"] = "Institute Type";
+    ViewData["Title"] = "Institute Type";
 }
 
 <style>
-	.exam-type-header {
-		background-color: #f1f3f5;
-		border-radius: 6px 6px 0 0;
-		padding: 1rem 1.25rem;
-	}
+    .exam-type-header {
+        background-color: #f1f3f5;
+        border-radius: 6px 6px 0 0;
+        padding: 1rem 1.25rem;
+    }
 
-	.exam-row {
-		background-color: #ffffff;
-		border: 1px solid #dee2e6;
-		border-radius: 6px;
-	}
+    .exam-row {
+        background-color: #ffffff;
+        border: 1px solid #dee2e6;
+        border-radius: 6px;
+    }
 
-	.institute-grid {
-		display: grid;
-		grid-template-columns: 1.4fr 1fr 1.6fr 1fr;
-		column-gap: 1.5rem;
-		row-gap: 0.5rem;
-	}
+    .institute-grid {
+        display: grid;
+        grid-template-columns: 1.4fr 1fr 1.6fr 1fr;
+        column-gap: 1.5rem;
+        row-gap: 0.5rem;
+    }
 
-	@@media (max-width: 768px) {
-		.institute-grid {
-			grid-template-columns: repeat(2, 1fr);
-		}
-	}
+    @@media (max-width: 768px) {
+        .institute-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
 </style>
 
 <h4 class="fw-bold">INSTITUTE TYPE</h4>
 <p class="text-muted">Dashboard / Institute Type</p>
 
 <div class="card shadow-sm">
-	<div class="exam-type-header">
-		<div class="d-flex justify-content-between aligh-items-center mb-2">
-           <h5 class="mb-0">Institute Type List</h5>
-		   <div class="d-flex gap-2">
-			   <a asp-action="InstituteTypeInsert" class="btn btn-primary btn-sm">Add</a>
-			   <button type="button" id="btnDownload" class="btn btn-outline-secondary btn-sm">Download</button>
-		   </div>
-		</div>
+    <div class="exam-type-header">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+            <h5 class="mb-0">Institute Type List</h5>
+            <div class="d-flex gap-2">
+                <a asp-action="AddEdit" class="btn btn-primary btn-sm">ADD</a>
+                <button type="button" id="btnDownload" class="btn btn-outline-secondary btn-sm">Download</button>
+            </div>
+        </div>
 
-		<div class="d-flex justify-content-between aligh-items-center flex-wrap gap-2">
-			<div class="input-group	input-group-sm" style="max-width:250px;">
-				<span class="input-group-text"><i class="bg-info bi-serch"></i></span>
-				<input type="text" id="serchBox" class="form-control" placeholder="Serch" />
-			</div>
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+            <div class="d-flex align-items-center gap-2">
+                <span>Show</span>
+                <select id="pageSizeSelect" class="form-select form-select-sm" style="width:80px;">
+                    <option value="10">10</option>
+                    <option value="25">25</option>
+                    <option value="50" selected>50</option>
+                    <option value="100">100</option>
+                    <option value="99999">All</option>
+                </select>
+                <span>entries</span>
+            </div>
+            <div class="input-group input-group-sm" style="max-width:250px;">
+                <span class="input-group-text"><i class="bi bi-search"></i></span>
+                <input type="text" id="searchBox" class="form-control" placeholder="search" />
+            </div>
+        </div>
+    </div>
 
-			<div class="d-flex aligh-items-center gap-2">
-				<span>Show</span>
-				<select id="pageSizeSelect" class="form-select form-select-sm" style="width:80px;">
-					<option vlaue="10">10</option>
-					<option value="25">25</option>
-					<option value="50">50</option>
-					<option value="100">100</option>
-					<option value="9999">All</option>
-				</select>
-				<span>Entries</span>
-			</div>
-		</div>
-	</div>
 
-	<div class="card-body">
-		<div id="instituteTypeList">
-			@foreach (var item in Model)
-			{
-				<div class="exam-row p-3 mb-3" data-title="@item.Title?.ToLower()">
-					<div class="mb-2">
-						<span class="badge bg-secondary fs-6">@item.Id</span>
-					</div>
-				</div>
-			}
-		</div>
-	</div>
+    <div class="card-body">
+        <div id="instituteTypeList">
+            @foreach (var item in Model)
+            {
+                <div class="exam-row p-3 mb-3" data-title="@item.Title?.ToLower()">
+                    <div class="mb-2">
+                        <span class="badge bg-secondary fs-6">@item.Id</span>
+                    </div>
+                    <hr class="mt-0" />
+
+                    <div class="institute-grid mb-2">
+                        <div>
+                            <small class="text-muted d-block">Title</small>
+                            <strong>@item.Title</strong>
+                        </div>
+                        <div>
+                            <small class="text-muted d-block">Short Name</small>
+                            <strong>@item.ShortCode</strong>
+                        </div>
+                        <div>
+                            <small class="text-muted d-block">Description</small>
+                            <strong>@item.Description</strong>
+                        </div>
+                        <div>
+                            <small class="text-muted d-block">Status</small>
+                            <strong class="@(item.StatusFlag == "A" ? "text-success" : "text-danger")">@item.StatusDisplay</strong>
+                        </div>
+                    </div>
+                    <hr />
+
+                    <div class="d-flex gap-2">
+                        <a asp-action="AddEdit" asp-route-id="@item.Id" class="btn btn-outline-primary btn-sm">
+                            <i class="bi bi-pencil"></i> Edit
+                        </a>
+                        <form asp-action="ChangeStatus" method="post" class="d-inline">
+                            <input type="hidden" name="id" value="@item.Id" />
+                            <input type="hidden" name="status" value="@(item.StatusFlag == "A" ? "I" : "A")" />
+                            <button type="submit" class="btn btn-outline-danger btn-sm">
+                                <i class="bi bi-slash-circle"></i> @(item.StatusFlag == "A" ? "InActive" : "Active")
+                            </button>
+                        </form>
+                        <form asp-action="Delete" method="post" class="d-inline" onsubmit="return confirm('Delete this record?');">
+                            <input type="hidden" name="id" value="@item.Id" />
+                            <button type="submit" class="btn btn-outline-danger btn-sm">
+                                <i class="bi bi-trash"></i> Delete
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <p id="noResults" class="text-muted text-center d-none">No matching records found.</p>
+    </div>
 </div>
+
+<div class="modal fade" id="saveModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content text-center p-4">
+            <div class="modal-body">
+                <i class="bi bi-check-circle text-success" style="font-size:4rem;"></i>
+                <h4 class="fw-bold mt-3">Success</h4>
+                <p class="text-muted">@TempData["SaveMessage"]</p>
+                <button type="button" class="btn btn-primary px-4" data-bs-dismiss="modal">Ok</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        const searchBox = document.getElementById("searchBox");
+        const pageSizeSelect = document.getElementById("pageSizeSelect");
+        const rows = Array.from(document.querySelectorAll(".exam-row"));
+        const noResults = document.getElementById("noResults");
+
+        function applyFilters() {
+            const term = searchBox.value.trim().toLowerCase();
+            const limit = parseInt(pageSizeSelect.value);
+            let visibleCount = 0;
+
+            rows.forEach(row => {
+                const matches = !term || (row.dataset.title || "").includes(term);
+                if (matches && visibleCount < limit) {
+                    row.classList.remove("d-none");
+                    visibleCount++;
+                } else {
+                    row.classList.add("d-none");
+                }
+            });
+
+            noResults.classList.toggle("d-none", visibleCount > 0);
+        }
+
+        searchBox.addEventListener("input", applyFilters);
+        pageSizeSelect.addEventListener("change", applyFilters);
+        applyFilters();
+
+        @if (TempData["ShowSaveModalOnIndex"] != null)
+        {
+                    <text>
+                    var saveModal = new bootstrap.Modal(document.getElementById('saveModal'));
+                    saveModal.show();
+                    </text>
+        }
+    </script>
+}

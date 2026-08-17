@@ -1,0 +1,54 @@
+﻿@model ActivitiesManagement.Models.InstituteType
+@{
+	bool isEdit = Model.Id != 0;
+	ViewData["Title"] = isEdit ? "Edit Institute Type" : "Add Institute Type";
+}
+
+<div class="d-flex justify-content-between aligh-items-center mb-3">
+	<div>
+		<h4 class="fw-bold mb-0">@(isEdit ? "EDIT" : "ADD") INSTITUTE TYPE</h4>
+		<small class="text-muted">Dashboard / Institute Type / @(isEdit ? "Edit" : "Add") Institute Type</small>
+	</div>
+	<a asp-action="Index" class="btn btn-primary">BACK</a>
+</div> 
+
+<div class="card shadow-sm">
+	<div class="card-body">
+		<form asp-action="AddEdit" method="post" >
+			@Html.AntiForgeryToken()
+			<input type="hidden" name="Id" value="@Model.Id" />
+
+
+			<div class="row mb-3">
+				<div class="col-md-6">
+					<label class="form-label">Title <span class="text-danger">*</span></label>
+					<input type="text" name="Title" value="@Model.Title" class="form-control" placeholder="Enter Title" required/>
+				</div>
+
+				<div class="col-md-6">
+					<label class="form-label">Short Name <span class="text-danger">*</span></label>
+					<input type="text" name="ShortCode" value="@Model.ShortCode" class="form-control" placeholder="Enter Short Name" required />
+				</div>
+			</div>
+
+			<div class="mb-3">
+				<label class="form-label">Description</label>
+				<textarea name="Description" class="form-control" rows="3" placeholder="Enter Description">@Model.Description</textarea>
+
+			</div>
+
+			@if (isEdit)
+			{
+				<button type="submit" class="btn btn-primary">Update</button>
+			}
+			else
+			{
+				<div class="d-flex gap-2">
+					<button type="submit" name="action" value="save" class="btn btn-primary">Save</button>
+					<button type="submit" name="action" value="saveAndAddAnother" class="btn btn-success">Save & Add Another</button>
+					<a asp-action="Index" class="btn btn-danger">Cancel</a>
+				</div>
+			}
+		</form>
+	</div>
+</div>
