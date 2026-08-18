@@ -7,6 +7,6 @@
         public string ShortCode { get; set; }
         public string Description { get; set; }
         public string StatusFlag {  get; set; }
-        public string StatusDisplay {  get; set; }
+        public string StatusDisplay => StatusFlag == "A" ? "Active" : "InActive";
     }
 }

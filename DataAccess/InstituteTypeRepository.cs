@@ -20,7 +20,7 @@ namespace ActivitiesManagement.DataAccess
             using var cmd = new SqlCommand("usp_InstituteType_GetAll", con) { CommandType = CommandType.StoredProcedure };
             con.Open();
             using var dr = cmd.ExecuteReader();
-            while(dr.Read())
+            while (dr.Read())
             {
                 list.Add(Map(dr));
             }
@@ -35,21 +35,21 @@ namespace ActivitiesManagement.DataAccess
             cmd.Parameters.AddWithValue("@Id", id);
             con.Open();
             using var dr = cmd.ExecuteReader();
-            if(dr.Read())
+            if (dr.Read())
             {
                 item = Map(dr);
             }
             return item;
         }
 
-        public int Insert(InstituteType model,int createUser)
+        public int Insert(InstituteType model, int createUser)
         {
             using var con = new SqlConnection(_connectionString);
-            using var cmd = new SqlCommand("usp_Institute_Insert", con);
+            using var cmd = new SqlCommand("usp_InstituteType_Insert", con) { CommandType = CommandType.StoredProcedure };
 
-            cmd.Parameters.AddWithValue("@Title", model.Title);
+            cmd.Parameters.AddWithValue("@Title", model.Title ?? "");
             cmd.Parameters.AddWithValue("@ShortCode", model.ShortCode ?? "");
-            cmd.Parameters.AddWithValue("@Description", model.Description ?? "");
+            cmd.Parameters.AddWithValue("@Description", (object)model.Description ?? DBNull.Value);
             cmd.Parameters.AddWithValue("@CreateUser", createUser);
 
             var outputParam = new SqlParameter("@NewId", SqlDbType.Int) { Direction = ParameterDirection.Output };
@@ -67,9 +67,9 @@ namespace ActivitiesManagement.DataAccess
             using var cmd = new SqlCommand("usp_InstituteType_Update", con) { CommandType = CommandType.StoredProcedure };
 
             cmd.Parameters.AddWithValue("@Id", model.Id);
-            cmd.Parameters.AddWithValue("@Title", model.Title);
+            cmd.Parameters.AddWithValue("@Title", model.Title ?? "");
             cmd.Parameters.AddWithValue("@ShortCode", model.ShortCode ?? "");
-            cmd.Parameters.AddWithValue("@Description", model.Description);
+            cmd.Parameters.AddWithValue("@Description", (object)model.Description ?? DBNull.Value);
             cmd.Parameters.AddWithValue("@UpdateUser", updateUser);
 
             con.Open();
@@ -96,12 +96,11 @@ namespace ActivitiesManagement.DataAccess
             cmd.ExecuteNonQuery();
         }
 
-
-      private static InstituteType Map(SqlDataReader dr)
+        private static InstituteType Map(SqlDataReader dr)
         {
             return new InstituteType
             {
-                Id = Convert.ToInt32(dr["ID"]),
+                Id = Convert.ToInt32(dr["Id"]),
                 Title = dr["Title"]?.ToString(),
                 ShortCode = dr["ShortCode"]?.ToString(),
                 Description = dr["Description"]?.ToString(),
