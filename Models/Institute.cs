@@ -14,8 +14,10 @@
         public string InstituteLogo { get; set; }
         public string Address { get; set; }
         public string Remarks { get; set; }
-        public string CountryId { get; set; }
+        public long CountryId { get; set; }
         public string CountryName { get; set; }
+        public long StateId { get; set; }
+        public string StateName { get; set; }
         public long CityId { get; set; }
         public string CityName { get; set; }
         public long? AreaId { get; set; }

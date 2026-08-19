@@ -1,0 +1,76 @@
+﻿<h4 class="fw-bold">INSTITUTE</h4>
+<p class="text-muted">Dashboard / Institute</p>
+
+<div class="card shadow-sm">
+    <div class="exam-type-header">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+            <h5 class="mb-0">Institute List</h5>
+            <div class="d-flex gap-2">
+                <a asp-action="AddEdit" class="btn btn-primary btn-sm">ADD</a>
+                <button type="button" id="btnDownload" class="btn btn-outline-secondary btn-sm">Download</button>
+            </div>
+        </div>
+
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+            <div class="input-group input-group-sm" style="max-width:250px;">
+                <span class="input-group-text"><i class="bi bi-search"></i></span>
+                <input type="text" id="searchBox" class="form-control" placeholder="search" />
+            </div>
+            <div class="d-flex align-items-center gap-2">
+                <span>Show</span>
+                <select id="pageSizeSelect" class="form-select form-select-sm" style="width:80px;">
+                    <option value="10">10</option>
+                    <option value="25">25</option>
+                    <option value="50" selected>50</option>
+                    <option value="100">100</option>
+                    <option value="99999">All</option>
+                </select>
+                <span>entries</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="card-body">
+        <div id="instituteList">
+            @foreach (var item in Model)
+            {
+                <div class="exam-row p-3 mb-3" data-name="@item.InstituteName?.ToLower()" data-type="@item.InstituteTypeTitle?.ToLower()">
+                    <div class="mb-2">
+                        <span class="badge bg-secondary fs-6">@item.Id</span>
+                    </div>
+                    <hr class="mt-0" />
+
+                    <div class="institute-grid mb-2">
+                        <div>
+                            <small class="text-muted d-block">Institute Type</small>
+                            <strong>@item.InstituteTypeTitle</strong>
+                        </div>
+                        <div>
+                            <small class="text-muted d-block">Institute Name & Code</small>
+                            <strong class="d-block">@item.InstituteName</strong>
+                            <strong>@item.Institutecode</strong>
+                        </div>
+                        <div>
+                            <small class="text-muted d-block">Contact No.</small>
+                            <strong>@item.ContactNumber</strong>
+                        </div>
+                        <div>
+                            <small class="text-muted d-block">Email</small>
+                            <strong>@item.Email</strong>
+                        </div>
+                    </div>
+
+                    <div class="institute-grid2 mb-2">
+                        <div>
+                            <small class="text-muted d-block">Country</small>
+                            <strong>@item.CountryName</strong>
+                        </div>
+                        <div>
+                            <small class="text-muted d
+                        <div>
+                            <small class="text-muted d-block">Status</small>
+                            <strong class="@(item.StatusFlag == "A" ? "text-success" : "text-danger")">@item.StatusDisplay</strong>
+                        </div>
+                    </div>
+                    <hr />
+

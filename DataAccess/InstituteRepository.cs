@@ -134,8 +134,10 @@ namespace ActivitiesManagement.Repositories
             using var cmd = new SqlCommand("usp_Institute_Delete", con) { CommandType = CommandType.StoredProcedure };
             cmd.Parameters.AddWithValue("@Id", id);
             con.Open();
-            cmd.BeginExecuteNonQuery();
+            cmd.ExecuteNonQuery();
         }
+
+        // ---------- Dropdown methods ----------
 
         public List<DropdownItem> GetInstituteTypeDropdown()
         {
@@ -151,14 +153,91 @@ namespace ActivitiesManagement.Repositories
             return list;
         }
 
+        public List<DropdownItem> GetCountryDropdown()
+        {
+            var list = new List<DropdownItem>();
+            using var con = new SqlConnection(_connectionString);
+            using var cmd = new SqlCommand("usp_Country_GetAllActive", con) { CommandType = CommandType.StoredProcedure };
+            con.Open();
+            using var dr = cmd.ExecuteReader();
+            while (dr.Read())
+            {
+                list.Add(new DropdownItem { Id = Convert.ToInt64(dr["ID"]), Name = dr["CountryName"]?.ToString() });
+            }
+            return list;
+        }
+
+        public List<DropdownItem> GetStateDropdown(long countryId)
+        {
+            var list = new List<DropdownItem>();
+            using var con = new SqlConnection(_connectionString);
+            using var cmd = new SqlCommand("usp_State_GetByCountryId", con) { CommandType = CommandType.StoredProcedure };
+            cmd.Parameters.AddWithValue("@CountryId", countryId);
+            con.Open();
+            using var dr = cmd.ExecuteReader();
+            while (dr.Read())
+            {
+                list.Add(new DropdownItem { Id = Convert.ToInt64(dr["Id"]), Name = dr["StateName"]?.ToString() });
+            }
+            return list;
+        }
+
         public List<DropdownItem> GetCityDropdown(long stateId)
         {
             var list = new List<DropdownItem>();
             using var con = new SqlConnection(_connectionString);
-            using var cmd = new SqlCommand("usp_City_GetByStateId", con) { CommandType = CommandType.S
+            using var cmd = new SqlCommand("usp_City_GetByStateId", con) { CommandType = CommandType.StoredProcedure };
+            cmd.Parameters.AddWithValue("@StateId", stateId);
+            con.Open();
+            using var dr = cmd.ExecuteReader();
+            while (dr.Read())
+            {
+                list.Add(new DropdownItem { Id = Convert.ToInt64(dr["Id"]), Name = dr["CityName"]?.ToString() });
+            }
+            return list;
         }
 
+        public List<DropdownItem> GetAreaDropdown(long cityId)
+        {
+            var list = new List<DropdownItem>();
+            using var con = new SqlConnection(_connectionString);
+            using var cmd = new SqlCommand("usp_Area_GetByCityId", con) { CommandType = CommandType.StoredProcedure };
+            cmd.Parameters.AddWithValue("@CityId", cityId);
+            con.Open();
+            using var dr = cmd.ExecuteReader();
+            while (dr.Read())
+            {
+                list.Add(new DropdownItem { Id = Convert.ToInt64(dr["Id"]), Name = dr["Area"]?.ToString() });
+            }
+            return list;
+        }
 
+        private static Institute Map(SqlDataReader dr)
+        {
+            return new Institute
+            {
+                Id = Convert.ToInt64(dr["ID"]),
+                InstituteTypeId = dr["InstituteTypeId"] == DBNull.Value ? 0 : Convert.ToInt64(dr["InstituteTypeId"]),
+                InstituteTypeTitle = dr["InstituteTypeTitle"]?.ToString(),
+                InstituteName = dr["InstituteName"]?.ToString(),
+                ContactNumber = dr["ContactNumber"]?.ToString(),
+                Email = dr["Email"]?.ToString(),
+                Website = dr["Website"]?.ToString(),
+                Institutecode = dr["Institutecode"]?.ToString(),
+                Pincode = dr["Pincode"]?.ToString(),
+                InstituteLogo = dr["InstituteLogo"]?.ToString(),
+                Address = dr["Address"]?.ToString(),
+                Remarks = dr["Remarks"]?.ToString(),
+                CountryId = dr["CountryId"] == DBNull.Value ? 0 : Convert.ToInt64(dr["CountryId"]),
+                CountryName = dr["CountryName"]?.ToString(),
+                StateId = dr["StateId"] == DBNull.Value ? 0 : Convert.ToInt64(dr["StateId"]),
+                StateName = dr["StateName"]?.ToString(),
+                CityId = dr["CityId"] == DBNull.Value ? 0 : Convert.ToInt64(dr["CityId"]),
+                CityName = dr["CityName"]?.ToString(),
+                AreaId = dr["AreaId"] == DBNull.Value ? null : Convert.ToInt64(dr["AreaId"]),
+                Area = dr["Area"]?.ToString(),
+                StatusFlag = dr["StatusFlag"]?.ToString()
+            };
+        }
     }
 }
-
