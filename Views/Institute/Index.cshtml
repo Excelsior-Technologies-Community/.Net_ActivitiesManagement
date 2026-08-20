@@ -66,11 +66,98 @@
                             <strong>@item.CountryName</strong>
                         </div>
                         <div>
-                            <small class="text-muted d
+                            <small class="text-muted d-block">State</small>
+                            <strong>@item.StateName</strong>
+                        </div>
                         <div>
                             <small class="text-muted d-block">Status</small>
                             <strong class="@(item.StatusFlag == "A" ? "text-success" : "text-danger")">@item.StatusDisplay</strong>
                         </div>
                     </div>
                     <hr />
+
+                    <div class="d-flex gap-2">
+                        <a asp-action="AddEdit" asp-route-id="@item.Id" class="btn btn-outline-primary btn-sm">
+                            <i class="bi bi-pencil"></i> Edit
+                        </a>
+                        <form asp-action="ChangeStatus" method="post" class="d-inline">
+                            <input type="hidden" name="id" value="@item.Id" />
+                            <input type="hidden" name="status" value="@(item.StatusFlag == "A" ? "I" : "A")" />
+                            <button type="submit" class="btn btn-outline-danger btn-sm">
+                                <i class="bi bi-slash-circle"></i> @(item.StatusFlag == "A" ? "InActive" : "Active")
+                            </button>
+                        </form>
+                        <form asp-action="Delete" method="post" class="d-inline" onsubmit="return confirm('Delete this record?');">
+                            <input type="hidden" name="id" value="@item.Id" />
+                            <button type="submit" class="btn btn-outline-danger btn-sm">
+                                <i class="bi bi-trash"></i> Delete
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <p id="noResults" class="text-muted text-center d-none">No matching records found.</p>
+    </div>
+</div>
+
+<div class="modal fade" id="saveModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content text-center p-4">
+            <div class="modal-body">
+                <i class="bi bi-check-circle text-success" style="font-size:4rem;"></i>
+                <h4 class="fw-bold mt-3">Success</h4>
+                <p class="text-muted">@TempData["SaveMessage"]</p>
+                <button type="button" class="btn btn-primary px-4" data-bs-dismiss="modal">Ok</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        const searchBox = document.getElementById("searchBox");
+        const pageSizeSelect = document.getElementById("pageSizeSelect");
+        const rows = Array.from(document.querySelectorAll(".exam-row"));
+        const noResults = document.getElementById("noResults");
+
+        function applyFilters() {
+            const term = searchBox.value.trim().toLowerCase();
+            const limit = parseInt(pageSizeSelect.value);
+            let visibleCount = 0;
+
+            rows.forEach(row => {
+                const matches = !term ||
+                    (row.dataset.name || "").includes(term) ||
+                    (row.dataset.type || "").includes(term);
+                if (matches && visibleCount < limit) {
+                    row.classList.remove("d-none");
+                    visibleCount++;
+                } else {
+                    row.classList.add("d-none");
+                }
+            });
+             noResults.classList.toggle("d-none", visibleCount > 0);
+        }
+
+        searchBox.addEventListener("input", applyFilters);
+        pageSizeSelect.addEventListener("change", applyFilters);
+        applyFilters();
+         @if (TempData["ShowSaveModalOnIndex"] != null)
+        {
+                <text>
+                var saveModal = new bootstrap.Modal(document.getElementById('saveModal'));
+                saveModal.show();
+                </text>
+        }
+
+       }
+    </script>
+}
+
+
+
+
+
 
