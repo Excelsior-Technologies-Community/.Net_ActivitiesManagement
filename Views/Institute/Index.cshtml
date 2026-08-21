@@ -1,4 +1,43 @@
-﻿<h4 class="fw-bold">INSTITUTE</h4>
+﻿@model List<ActivitiesManagement.Models.Institute>
+@{
+    ViewData["Title"] = "Institute";
+}
+
+<style>
+    .exam-type-header {
+        background-color: #f1f3f5;
+        border-radius: 6px 6px 0 0;
+        padding: 1rem 1.25rem;
+    }
+
+    .exam-row {
+        background-color: #ffffff;
+        border: 1px solid #dee2e6;
+        border-radius: 6px;
+    }
+
+    .institute-grid {
+        display: grid;
+        grid-template-columns: 1fr 1.6fr 1.2fr 1.6fr;
+        column-gap: 1.5rem;
+        row-gap: 0.5rem;
+    }
+
+    .institute-grid2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        column-gap: 1.5rem;
+        row-gap: 0.5rem;
+    }
+
+    @@media (max-width: 768px) {
+        .institute-grid, .institute-grid2 {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+</style>
+
+<h4 class="fw-bold">INSTITUTE</h4>
 <p class="text-muted">Dashboard / Institute</p>
 
 <div class="card shadow-sm">
@@ -12,10 +51,6 @@
         </div>
 
         <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
-            <div class="input-group input-group-sm" style="max-width:250px;">
-                <span class="input-group-text"><i class="bi bi-search"></i></span>
-                <input type="text" id="searchBox" class="form-control" placeholder="search" />
-            </div>
             <div class="d-flex align-items-center gap-2">
                 <span>Show</span>
                 <select id="pageSizeSelect" class="form-select form-select-sm" style="width:80px;">
@@ -26,6 +61,10 @@
                     <option value="99999">All</option>
                 </select>
                 <span>entries</span>
+            </div>
+            <div class="input-group input-group-sm" style="max-width:250px;">
+                <span class="input-group-text"><i class="bi bi-search"></i></span>
+                <input type="text" id="searchBox" class="form-control" placeholder="search" />
             </div>
         </div>
     </div>
@@ -138,26 +177,20 @@
                     row.classList.add("d-none");
                 }
             });
-             noResults.classList.toggle("d-none", visibleCount > 0);
+
+            noResults.classList.toggle("d-none", visibleCount > 0);
         }
 
         searchBox.addEventListener("input", applyFilters);
         pageSizeSelect.addEventListener("change", applyFilters);
         applyFilters();
-         @if (TempData["ShowSaveModalOnIndex"] != null)
-        {
-                <text>
-                var saveModal = new bootstrap.Modal(document.getElementById('saveModal'));
-                saveModal.show();
-                </text>
-        }
 
-       }
+        @if (TempData["ShowSaveModalOnIndex"] != null)
+        {
+                    <text>
+                    var saveModal = new bootstrap.Modal(document.getElementById('saveModal'));
+                    saveModal.show();
+                    </text>
+        }
     </script>
 }
-
-
-
-
-
-
