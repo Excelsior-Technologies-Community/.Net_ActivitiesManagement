@@ -23,6 +23,6 @@
         public long? AreaId { get; set; }
         public string Area { get; set; }
         public string StatusFlag { get; set; }
-        public string StatusDisplay { get; set; }
+        public string StatusDisplay => StatusFlag == "A" ? "Active" : "InActive";
     }
 }
