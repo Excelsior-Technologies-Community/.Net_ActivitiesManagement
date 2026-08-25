@@ -2,7 +2,7 @@
 using System.Data;
 using ActivitiesManagement.Models;
 
-namespace ActivitiesManagement.DataAccess
+namespace ActivitiesManagement.Repositories
 {
     public class GradeRepository
     {
@@ -35,14 +35,14 @@ namespace ActivitiesManagement.DataAccess
             cmd.Parameters.AddWithValue("@Id", id);
             con.Open();
             using var dr = cmd.ExecuteReader();
-            if(dr.Read())
+            if (dr.Read())
             {
                 item = Map(dr);
             }
             return item;
         }
 
-        public int Insert(Grade model, int creatUser)
+        public int Insert(Grade model, int createUser)
         {
             using var con = new SqlConnection(_connectionString);
             using var cmd = new SqlCommand("usp_Grade_Insert", con) { CommandType = CommandType.StoredProcedure };
@@ -50,12 +50,9 @@ namespace ActivitiesManagement.DataAccess
             cmd.Parameters.AddWithValue("@Title", model.Title ?? "");
             cmd.Parameters.AddWithValue("@ShortCode", model.ShortCode ?? "");
             cmd.Parameters.AddWithValue("@Description", (object)model.Description ?? DBNull.Value);
-            cmd.Parameters.AddWithValue("@CreateUser", creatUser);
+            cmd.Parameters.AddWithValue("@CreateUser", createUser);
 
             var outputParam = new SqlParameter("@NewId", SqlDbType.Int) { Direction = ParameterDirection.Output };
-            cmd.Parameters.Add(outputParam);
-
-            con.Open();
             cmd.Parameters.Add(outputParam);
 
             con.Open();
@@ -103,7 +100,7 @@ namespace ActivitiesManagement.DataAccess
         {
             return new Grade
             {
-                Id = Convert.ToInt32(dr["ID"]),
+                Id = Convert.ToInt32(dr["Id"]),
                 Title = dr["Title"]?.ToString(),
                 ShortCode = dr["ShortCode"]?.ToString(),
                 Description = dr["Description"]?.ToString(),
