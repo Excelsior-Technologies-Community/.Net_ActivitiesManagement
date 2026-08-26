@@ -1,0 +1,111 @@
+﻿@model List<ActivitiesManagement.Models.Department>
+@{
+	ViewBag["Title"] = "Department";
+}
+
+<style>
+	.dept-header {
+		background-color: #f8d9fa;
+		border-radius: 6px 6px 0 0;
+		padding: 1rem 1.25rem;
+	}
+
+	.dept-row {
+		background-color: #ffffff;
+		border: 1px solid #dee2e6;
+		border-radius: 6px;
+	}
+
+	.dept-grid {
+		display: grid;
+		grid-template-columns: 1.4fr 1fr 1.6fr 1fr;
+		column-gap: 1.5rem;
+		row-gap: 05.rem;
+	}
+
+	@@media (max-width: 768px){
+		.dept-grid {
+			grid-template-columns: repeat(2, 1fr);
+		}
+	}
+</style>
+
+<div class="d-flex justify-content-between aligh-items-center mb-1">
+	<div>
+		<h4 class="fw-bold mb-0">DEPARTMENT</h4>
+		<small class="text-muted">Dashboard / Department</small>
+	</div>
+	<div class="d-flex gap-2">
+		<a asp-action="AddEdit" class="btn btn-primary btn-sm px-2">ADD</a>
+		<button type="button" id="btnDownload" class="btn btn-outline-secondary btn-sm">Download</button>
+	</div>
+</div>
+
+<div class="card shadow-sm mt-3">
+	<div class="dept-header d-flex justify-content-between aligh-items-center flex-wrap gap-2">
+		<h5 class="mb-0 fw-bold">Department List</h5>
+		<div class="d-flex aligh-items-center gap-3">
+			<div class="input-group input-group-sm" style="max-width:220px;">
+				<span class="input-group-text bg-white"><i class="bg-info bi-serch text-muted"></i></span>
+				<input type="text" id="serchBox" class="form-control" placeholder="Serch"/>
+			</div>
+			<div class="d-flex aligh-items-center gap-1 text-muted fd-7">
+				<span>Show</span>
+				<select id="pageSizeSelect" class="form-select form-select-sm" style="width:70px;">
+					<option value="10">10</option>
+					<option value="25">25</option>
+					<option value="50">50</option>
+					<option value="100">100</option>
+					<option value="9999">ALL</option>
+
+				</select>
+				<span>Entries</span>
+			</div>
+		</div>
+	</div>
+
+	<div class="card-body">
+		<div id="deptList">
+			@foreach (var item in Model)
+			{
+				<div class="dept-row p-3 mb-3" data-title="@item.Title?.ToLower()">
+					<div class="mb-2">
+						<span class="badge bg-secondary px-3 py-2">@item.Id</span>
+                  </div>
+				  <hr class="mt-2 mb3"/>
+
+				  <div class="dept-grid mb-3">
+					  <div>
+						  <small class="text-muted d-block">Title</small>
+						  <strong>@item.Title</strong>
+					  </div>
+					  <div>
+						  <small class="text-muted d-block">Description</small>
+						  <strong>@(string.IsNullOrWhiteSpace(item.Description)? "-" : item.Description)</strong>
+					  </div>
+					  <div>
+						  <small class="text-muted d-block">Status</small>
+						  <strong class="@(item.StatusDisplay == "A" ? "text-success": "text-danger")">item.StatusDisplay
+					  </div>
+				  </div>
+				    
+				  <div class="d-flex gap-2">
+					  <a asp-action="AddEdit" asp-route-id="@item.Id" class="btn-outline-primary btn-sm">
+						  <i class="bg-info bi-pencil" ></i>
+					  </a>
+					  <form asp-action="ChangeStatus" method="post" class="d-inline">
+						  <input type="hidden" name="id" value="@item.Id"/>
+						  <input type="hidden" name="status" value="@(item.StatusFlag == "A" ? "I" : "A")"/>
+						  <button type="submit" class="btn btn-outline-danger btn-sm">
+							  <i class="bi bi-slash-circle"></i>@(item.StatusFlag == "A" ? "InActive" : "Active")
+						  </button>
+					  </form>
+
+
+				  </div>
+                 
+				</div>
+			}
+		</div>
+	</div>
+</div>
