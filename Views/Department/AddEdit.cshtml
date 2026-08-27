@@ -1,0 +1,48 @@
+﻿@model ActivitiesManagement.Models.Department
+@{
+    bool isEdit = Model.Id != 0;
+    ViewData["Title"] = isEdit ? "Edit Department" : "Add Department";
+}
+
+<div class="mb-3">
+    <h4 class="fw-bold mb-0">@(isEdit ? "EDIT DEPARTMENT" : "ADD DEPARTMENT")</h4>
+    <small class="text-muted">Dashboard / Department / @(isEdit ? "Edit Department" : "Add Department")</small>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-body p-4">
+        <form asp-action="AddEdit" method="post">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="Id" value="@Model.Id" />
+
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold">Title <span class="text-danger">*</span></label>
+                    <input type="text" name="Title" value="@Model.Title" class="form-control" placeholder="Enter Title" required />
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold">Short Name <span class="text-danger">*</span></label>
+                    <input type="text" name="ShortName" value="@Model.ShortName" class="form-control" placeholder="Enter Short Name" required />
+                </div>
+            </div>
+
+            <div class="mb-4">
+                <label class="form-label fw-semibold">Description</label>
+                <textarea name="Description" class="form-control" rows="3" placeholder="Enter Description">@Model.Description</textarea>
+            </div>
+
+            @if (isEdit)
+            {
+                <button type="submit" class="btn btn-primary px-4">Update</button>
+            }
+            else
+            {
+                <div class="d-flex gap-2">
+                    <button type="submit" name="action" value="save" class="btn btn-primary px-4">Save</button>
+                    <button type="submit" name="action" value="saveAndAddAnother" class="btn btn-success">Save & Add Another</button>
+                    <a asp-action="Index" class="btn btn-danger px-4">Cancel</a>
+                </div>
+            }
+        </form>
+    </div>
+</div>

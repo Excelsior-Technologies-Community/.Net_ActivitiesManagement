@@ -5,16 +5,16 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ActivitiesManagement.Controllers
 {
-    public class DepartmentController : Controller
+    public class CurrencyController : Controller
     {
-        private readonly DepartmentRepository _repo;
+        private readonly CurrencyRepository _repo;
 
-        public DepartmentController(DepartmentRepository repo)
+        public CurrencyController(CurrencyRepository repo)
         {
             _repo = repo;
         }
 
-        private int CurrentUserId => 1;
+        private int CurrentUserId => 1; 
 
         public IActionResult Index()
         {
@@ -25,8 +25,10 @@ namespace ActivitiesManagement.Controllers
         [HttpGet]
         public IActionResult AddEdit(int? id)
         {
+            ViewBag.CountryList = _repo.GetCountryDropdown();
+
             if (id == null)
-                return View(new Department());
+                return View(new Currency());
 
             var model = _repo.GetById(id.Value);
             if (model == null) return NotFound();
@@ -35,23 +37,24 @@ namespace ActivitiesManagement.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult AddEdit(Department model, string action)
+        public IActionResult AddEdit(Currency model, string action)
         {
-            if (string.IsNullOrWhiteSpace(model.Title) || string.IsNullOrWhiteSpace(model.ShortName))
+            if (string.IsNullOrWhiteSpace(model.Title) || model.CountryId == 0)
             {
-                ModelState.AddModelError("", "Title and Short Name are required.");
+                ViewBag.CountryList = _repo.GetCountryDropdown();
+                ModelState.AddModelError("", "Title and Country are required.");
                 return View(model);
             }
 
             if (model.Id == 0)
             {
                 _repo.Insert(model, CurrentUserId);
-                TempData["SaveMessage"] = "Department saved successfully.";
+                TempData["SaveMessage"] = "Currency saved successfully.";
             }
             else
             {
                 _repo.Update(model, CurrentUserId);
-                TempData["SaveMessage"] = "Department updated successfully.";
+                TempData["SaveMessage"] = "Currency updated successfully.";
             }
 
             TempData["ShowSaveModalOnIndex"] = true;
