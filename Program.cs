@@ -25,7 +25,8 @@ namespace ActivitiesManagement
             builder.Services.AddScoped<InstituteRepository>();
             builder.Services.AddScoped<GradeRepository>();
             builder.Services.AddScoped<DepartmentRepository>();
-
+            builder.Services.AddScoped<CurrencyRepository>();
+            builder.Services.AddScoped<StreamRepository>();
             var app = builder.Build();
 
             if (!app.Environment.IsDevelopment())
