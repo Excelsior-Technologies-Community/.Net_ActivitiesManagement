@@ -1,19 +1,20 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using ActivitiesManagement.DataAccess;
 using ActivitiesManagement.Models;
 using ActivitiesManagement.Repositories;
+using Microsoft.AspNetCore.Mvc;
 
 namespace ActivitiesManagement.Controllers
 {
-    public class StreamController : Controller
+    public class SpecializationController : Controller
     {
-        private readonly StreamRepository _repo;
+        private readonly SpecializationRepository _repo;
 
-        public StreamController(StreamRepository repo)
+        public SpecializationController(SpecializationRepository repo)
         {
             _repo = repo;
         }
 
-        private long CurrentUserId => 1; 
+        private long CurrentUserId => 1;
 
         public IActionResult Index()
         {
@@ -25,7 +26,7 @@ namespace ActivitiesManagement.Controllers
         public IActionResult AddEdit(int? id)
         {
             if (id == null)
-                return View(new StreamMaster());
+                return View(new Specialization());
 
             var model = _repo.GetById(id.Value);
             if (model == null) return NotFound();
@@ -34,7 +35,7 @@ namespace ActivitiesManagement.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult AddEdit(StreamMaster model, string action)
+        public IActionResult AddEdit(Specialization model, string action)
         {
             if (string.IsNullOrWhiteSpace(model.Title) || string.IsNullOrWhiteSpace(model.ShortCode))
             {
@@ -45,12 +46,12 @@ namespace ActivitiesManagement.Controllers
             if (model.Id == 0)
             {
                 _repo.Insert(model, CurrentUserId);
-                TempData["SaveMessage"] = "Stream saved successfully.";
+                TempData["SaveMessage"] = "Specialization saved successfully.";
             }
             else
             {
                 _repo.Update(model, CurrentUserId);
-                TempData["SaveMessage"] = "Stream updated successfully.";
+                TempData["SaveMessage"] = "Specialization updated successfully.";
             }
 
             TempData["ShowSaveModalOnIndex"] = true;

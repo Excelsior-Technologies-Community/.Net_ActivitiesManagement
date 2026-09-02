@@ -1,6 +1,6 @@
-﻿@model List<ActivitiesManagement.Models.StreamMaster>
+﻿@model List<ActivitiesManagement.Models.Specialization>
 @{
-    ViewData["Title"] = "Stream";
+    ViewData["Title"] = "Specialization";
 }
 
 <style>
@@ -30,13 +30,13 @@
     }
 </style>
 
-<h4 class="fw-bold">MANAGE STREAM</h4>
-<p class="text-muted">Dashboard / Stream Master</p>
+<h4 class="fw-bold">MANAGE SPECIALIZATION</h4>
+<p class="text-muted">Dashboard / Specialization Master</p>
 
 <div class="card shadow-sm">
     <div class="stream-header">
         <div class="d-flex justify-content-between align-items-center mb-2">
-            <h5 class="mb-0">Stream List</h5>
+            <h5 class="mb-0">Specialization List</h5>
             <div class="d-flex gap-2">
                 <a asp-action="AddEdit" class="btn btn-primary btn-sm">ADD</a>
                 <button type="button" id="btnDownload" class="btn btn-outline-secondary btn-sm">Download</button>
@@ -162,10 +162,10 @@
 
         @if (TempData["ShowSaveModalOnIndex"] != null)
         {
-                    <text>
-                    var saveModal = new bootstrap.Modal(document.getElementById('saveModal'));
-                    saveModal.show();
-                    </text>
+                        <text>
+                        var saveModal = new bootstrap.Modal(document.getElementById('saveModal'));
+                        saveModal.show();
+                        </text>
         }
     </script>
 }

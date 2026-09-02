@@ -4,20 +4,20 @@ using ActivitiesManagement.Models;
 
 namespace ActivitiesManagement.Repositories
 {
-    public class StreamRepository
+    public class SpecializationRepository
     {
         private readonly string _connectionString;
 
-        public StreamRepository(IConfiguration configuration)
+        public SpecializationRepository(IConfiguration configuration)
         {
             _connectionString = configuration.GetConnectionString("DefaultConnection");
         }
 
-        public List<StreamMaster> GetAll()
+        public List<Specialization> GetAll()
         {
-            var list = new List<StreamMaster>();
+            var list = new List<Specialization>();
             using var con = new SqlConnection(_connectionString);
-            using var cmd = new SqlCommand("usp_Stream_GetAll", con) { CommandType = CommandType.StoredProcedure };
+            using var cmd = new SqlCommand("usp_Specialization_GetAll", con) { CommandType = CommandType.StoredProcedure };
             con.Open();
             using var dr = cmd.ExecuteReader();
             while (dr.Read())
@@ -27,11 +27,11 @@ namespace ActivitiesManagement.Repositories
             return list;
         }
 
-        public StreamMaster GetById(int id)
+        public Specialization GetById(int id)
         {
-            StreamMaster item = null;
+            Specialization item = null;
             using var con = new SqlConnection(_connectionString);
-            using var cmd = new SqlCommand("usp_Stream_GetById", con) { CommandType = CommandType.StoredProcedure };
+            using var cmd = new SqlCommand("usp_Specialization_GetById", con) { CommandType = CommandType.StoredProcedure };
             cmd.Parameters.AddWithValue("@Id", id);
             con.Open();
             using var dr = cmd.ExecuteReader();
@@ -42,10 +42,10 @@ namespace ActivitiesManagement.Repositories
             return item;
         }
 
-        public int Insert(StreamMaster model, long createUser)
+        public int Insert(Specialization model, long createUser)
         {
             using var con = new SqlConnection(_connectionString);
-            using var cmd = new SqlCommand("usp_Stream_Insert", con) { CommandType = CommandType.StoredProcedure };
+            using var cmd = new SqlCommand("usp_Specialization_Insert", con) { CommandType = CommandType.StoredProcedure };
 
             cmd.Parameters.AddWithValue("@Title", model.Title ?? "");
             cmd.Parameters.AddWithValue("@ShortCode", model.ShortCode ?? "");
@@ -61,10 +61,10 @@ namespace ActivitiesManagement.Repositories
             return (int)outputParam.Value;
         }
 
-        public void Update(StreamMaster model, long updateUser)
+        public void Update(Specialization model, long updateUser)
         {
             using var con = new SqlConnection(_connectionString);
-            using var cmd = new SqlCommand("usp_Stream_Update", con) { CommandType = CommandType.StoredProcedure };
+            using var cmd = new SqlCommand("usp_Specialization_Update", con) { CommandType = CommandType.StoredProcedure };
 
             cmd.Parameters.AddWithValue("@Id", model.Id);
             cmd.Parameters.AddWithValue("@Title", model.Title ?? "");
@@ -79,7 +79,7 @@ namespace ActivitiesManagement.Repositories
         public void ChangeStatus(int id, string statusFlag, long updateUser)
         {
             using var con = new SqlConnection(_connectionString);
-            using var cmd = new SqlCommand("usp_Stream_ChangeStatus", con) { CommandType = CommandType.StoredProcedure };
+            using var cmd = new SqlCommand("usp_Specialization_ChangeStatus", con) { CommandType = CommandType.StoredProcedure };
             cmd.Parameters.AddWithValue("@Id", id);
             cmd.Parameters.AddWithValue("@StatusFlag", statusFlag);
             cmd.Parameters.AddWithValue("@UpdateUser", updateUser);
@@ -90,15 +90,15 @@ namespace ActivitiesManagement.Repositories
         public void Delete(int id)
         {
             using var con = new SqlConnection(_connectionString);
-            using var cmd = new SqlCommand("usp_Stream_Delete", con) { CommandType = CommandType.StoredProcedure };
+            using var cmd = new SqlCommand("usp_Specialization_Delete", con) { CommandType = CommandType.StoredProcedure };
             cmd.Parameters.AddWithValue("@Id", id);
             con.Open();
             cmd.ExecuteNonQuery();
         }
 
-        private static StreamMaster Map(SqlDataReader dr)
+        private static Specialization Map(SqlDataReader dr)
         {
-            return new StreamMaster
+            return new Specialization
             {
                 Id = Convert.ToInt32(dr["ID"]),
                 Title = dr["Title"]?.ToString(),
