@@ -2,7 +2,7 @@
 using System.Data;
 using ActivitiesManagement.Models;
 
-namespace ActivitiesManagement.Repositories
+namespace ActivitiesManagement.DataAccess
 {
     public class SpecializationRepository
     {
