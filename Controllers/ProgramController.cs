@@ -39,7 +39,7 @@ namespace ActivitiesManagement.Controllers
             if (id == null)
             {
                 LoadDropdowns();
-                return View(new Program());
+                return View(new ProgramMaster());
             }
 
             var model = _repo.GetById(id.Value);
@@ -51,7 +51,7 @@ namespace ActivitiesManagement.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult AddEdit(Program model)
+        public IActionResult AddEdit(ProgramMaster model)
         {
             if (string.IsNullOrWhiteSpace(model.Title))
             {
@@ -60,7 +60,7 @@ namespace ActivitiesManagement.Controllers
                 return View(model);
             }
 
-            if (model. == 0)
+            if (model.Id == 0)
             {
                 _repo.Insert(model, CurrentUserId);
                 TempData["SaveMessage"] = "Program saved successfully.";

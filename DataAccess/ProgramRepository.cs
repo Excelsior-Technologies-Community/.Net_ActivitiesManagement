@@ -14,16 +14,16 @@ namespace ActivitiesManagement.DataAccess
             _connectionString = configuration.GetConnectionString("DefaultConnection");
         }
 
-        public List<Program> GetAll()
+        public List<ProgramMaster> GetAll()
         {
-            var list = new List<Program>();
+            var list = new List<ProgramMaster>();
             using var con = new SqlConnection(_connectionString);
             using var cmd = new SqlCommand("usp_Program_GetAll", con) { CommandType = CommandType.StoredProcedure };
             con.Open();
             using var dr = cmd.ExecuteReader();
             while (dr.Read())
             {
-                list.Add(new Program
+                list.Add(new ProgramMaster
                 {
                     Id = Convert.ToInt64(dr["ID"]),
                     ProgramCode = dr["ProgramCode"]?.ToString(),
@@ -42,9 +42,9 @@ namespace ActivitiesManagement.DataAccess
             return list;
         }
 
-        public Program? GetById(long id)
+        public ProgramMaster? GetById(long id)
         {
-            Program? item = null;
+            ProgramMaster? item = null;
             using var con = new SqlConnection(_connectionString);
             using var cmd = new SqlCommand("usp_Program_GetById", con) { CommandType = CommandType.StoredProcedure };
             cmd.Parameters.AddWithValue("@Id", id);
@@ -52,7 +52,7 @@ namespace ActivitiesManagement.DataAccess
             using var dr = cmd.ExecuteReader();
             if (dr.Read())
             {
-                item = new Program
+                item = new ProgramMaster
                 {
                     Id = Convert.ToInt64(dr["ID"]),
                     ProgramCode = dr["ProgramCode"]?.ToString(),
@@ -97,7 +97,7 @@ namespace ActivitiesManagement.DataAccess
             return item;
         }
 
-        public long Insert(Program m, long createUser)
+        public long Insert(ProgramMaster m, long createUser)
         {
             using var con = new SqlConnection(_connectionString);
             using var cmd = new SqlCommand("usp_Program_Insert", con) { CommandType = CommandType.StoredProcedure };
@@ -110,7 +110,7 @@ namespace ActivitiesManagement.DataAccess
             return (long)outParam.Value;
         }
 
-        public void Update(Program m, long updateUser)
+        public void Update(ProgramMaster m, long updateUser)
         {
             using var con = new SqlConnection(_connectionString);
             using var cmd = new SqlCommand("usp_Program_Update", con) { CommandType = CommandType.StoredProcedure };
@@ -121,7 +121,7 @@ namespace ActivitiesManagement.DataAccess
             cmd.ExecuteNonQuery();
         }
 
-        private static void AddParams(SqlCommand cmd, Program m)
+        private static void AddParams(SqlCommand cmd, ProgramMaster m)
         {
             cmd.Parameters.AddWithValue("@Title", m.Title ?? "");
             cmd.Parameters.AddWithValue("@ProgramTypeId", (object?)m.ProgramTypeId ?? DBNull.Value);

@@ -1,6 +1,6 @@
 ﻿namespace ActivitiesManagement.Models
 {
-    public class Program
+    public class ProgramMaster
     {
         public long Id { get; set; }
         public string? ProgramCode { get; set; }
