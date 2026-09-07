@@ -203,5 +203,9 @@ namespace ActivitiesManagement.DataAccess
         public List<DropdownItem> GetSpecializationDropdown() => RunDropdown("usp_Specialization_GetAllActive", "ID", "Title");
         public List<DropdownItem> GetProgramDurationDropdown() => RunDropdown("usp_ProgramDuration_GetAllActive", "ID", "Title");
         public List<DropdownItem> GetGradeDropdown() => RunDropdown("usp_Grade_GetAllActive", "Id", "Title");
+
+        public List<DropdownItem> GetProgramLevelDropdown() => RunDropdown("usp_ProgramLevel_GetAllActive", "ID", "Title");
+        public List<DropdownItem> GetQualificationLevelDropdown() => RunDropdown("usp_QualificationLevel_GetAllActive", "ID", "Title");
     }
+
 }

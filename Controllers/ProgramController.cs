@@ -31,6 +31,8 @@ namespace ActivitiesManagement.Controllers
             ViewBag.SpecializationList = _repo.GetSpecializationDropdown();
             ViewBag.ProgramDurationList = _repo.GetProgramDurationDropdown();
             ViewBag.GradeList = _repo.GetGradeDropdown();
+            ViewBag.ProgramLevelList = _repo.GetProgramLevelDropdown();
+            ViewBag.QualificationLevelList = _repo.GetQualificationLevelDropdown();
         }
 
         [HttpGet]
@@ -76,6 +78,7 @@ namespace ActivitiesManagement.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult ChangeStatus(long id, string status)
         {
             _repo.ChangeStatus(id, status, CurrentUserId);

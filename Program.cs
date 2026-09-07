@@ -29,6 +29,9 @@ namespace ActivitiesManagement
             builder.Services.AddScoped<StreamRepository>();
             builder.Services.AddScoped<SpecializationRepository>();
             builder.Services.AddScoped<ProgramRepository>();
+            builder.Services.AddScoped<ProgramTypeRepository>();
+            builder.Services.AddScoped<EMailConfigRepository>();
+            builder.Services.AddScoped<QuestionMasterRepository>();
             var app = builder.Build();
 
             if (!app.Environment.IsDevelopment())

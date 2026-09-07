@@ -1,0 +1,68 @@
+﻿@model ActivitiesManagement.Models.EMailConfig
+@{
+    bool isEdit = Model.Id != 0;
+    ViewData["Title"] = isEdit ? "Edit Email Configuration" : "Add Email Configuration";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <div>
+        <h4 class="fw-bold mb-0">@(isEdit ? "EDIT" : "ADD") EMAIL CONFIGURATION</h4>
+        <small class="text-muted">Dashboard / Email Configuration / @(isEdit ? "Edit" : "Add") Email Configuration</small>
+    </div>
+    <a asp-action="Index" class="btn btn-primary">BACK</a>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        <form asp-action="AddEdit" method="post">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="Id" value="@Model.Id" />
+
+            <div class="row mb-3">
+                <div class="col-md-4">
+                    <label class="form-label">Host <span class="text-danger">*</span></label>
+                    <input type="text" name="EmailHost" value="@Model.EmailHost" class="form-control" placeholder="Enter Host" required />
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">Port <span class="text-danger">*</span></label>
+                    <input type="text" name="EmailPort" value="@Model.EmailPort" class="form-control" placeholder="Enter Port" required />
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">User Name <span class="text-danger">*</span></label>
+                    <input type="text" name="EmailUserName" value="@Model.EmailUserName" class="form-control" placeholder="Enter User Name" required />
+                </div>
+            </div>
+
+            <div class="row mb-3 align-items-center">
+                <div class="col-md-4">
+                    <label class="form-label">Password <span class="text-danger">*</span></label>
+                    <input type="text" name="EmailPassword" value="@Model.EmailPassword" class="form-control" placeholder="Enter Password" required />
+                </div>
+                <div class="col-md-4 pt-4">
+                    <div class="form-check">
+                        <input type="checkbox" name="EmailIsSSL" value="true" class="form-check-input" id="sslCheck" @(Model.EmailIsSSL ? "checked" : "") />
+                        <input type="hidden" name="EmailIsSSL" value="false" />
+                        <label class="form-check-label" for="sslCheck">SSL?</label>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">Email Type <span class="text-danger">*</span></label>
+                    <input type="text" name="EmailType" value="@Model.EmailType" class="form-control" placeholder="Enter Email Type" required />
+                </div>
+            </div>
+
+            @if (isEdit)
+            {
+                <button type="submit" class="btn btn-primary">Update</button>
+            }
+            else
+            {
+                <div class="d-flex gap-2">
+                    <button type="submit" name="action" value="save" class="btn btn-primary">Save</button>
+                    <button type="submit" name="action" value="saveAndAddAnother" class="btn btn-success">Save & Add Another</button>
+                    <a asp-action="Index" class="btn btn-danger">Cancel</a>
+                </div>
+            }
+        </form>
+    </div>
+</div>

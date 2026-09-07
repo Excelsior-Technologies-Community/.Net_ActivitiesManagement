@@ -10,6 +10,8 @@
     var specializations = ViewBag.SpecializationList as List<ActivitiesManagement.Models.DropdownItem>;
     var durations = ViewBag.ProgramDurationList as List<ActivitiesManagement.Models.DropdownItem>;
     var grades = ViewBag.GradeList as List<ActivitiesManagement.Models.DropdownItem>;
+    var programLevels = ViewBag.ProgramLevelList as List<ActivitiesManagement.Models.DropdownItem>;
+    var qualificationLevels = ViewBag.QualificationLevelList as List<ActivitiesManagement.Models.DropdownItem>;
 }
 
 <div class="d-flex justify-content-between align-items-center mb-3">
@@ -23,9 +25,10 @@
 <div class="card shadow-sm">
     <div class="card-body">
         <form asp-action="AddEdit" method="post" id="programForm">
-@Html.AntiForgeryToken()
+            @Html.AntiForgeryToken()
             <input type="hidden" name="Id" value="@Model.Id" />
 
+            <!-- Row 1: Program Title & Type -->
             <div class="row mb-3">
                 <div class="col-md-9">
                     <label class="form-label">Program Title <span class="text-danger">*</span></label>
@@ -37,14 +40,16 @@
                         <option value="">Select Type</option>
                         @if (programTypes != null)
                         {
-                            @foreach(var t in programTypes) {
+                            @foreach (var t in programTypes)
+                            {
                                 <option value="@t.Id" selected="@(t.Id == Model.ProgramTypeId)">@t.Name</option>
                             }
- }
+                        }
                     </select>
                 </div>
             </div>
 
+            <!-- Row 2: Country, Institute Type, Institute, Program Level -->
             <div class="row mb-3">
                 <div class="col-md-3">
                     <label class="form-label">Country <span class="text-danger">*</span></label>
@@ -52,10 +57,11 @@
                         <option value="">Select Country</option>
                         @if (countries != null)
                         {
-                            @foreach(var c in countries) {
+                            @foreach (var c in countries)
+                            {
                                 <option value="@c.Id" selected="@(c.Id == Model.CountryId)">@c.Name</option>
                             }
- }
+                        }
                     </select>
                 </div>
                 <div class="col-md-3">
@@ -64,10 +70,11 @@
                         <option value="">Select Institute Type</option>
                         @if (instituteTypes != null)
                         {
-                            @foreach(var it in instituteTypes) {
+                            @foreach (var it in instituteTypes)
+                            {
                                 <option value="@it.Id" selected="@(it.Id == Model.InstituteTypeId)">@it.Name</option>
                             }
- }
+                        }
                     </select>
                 </div>
                 <div class="col-md-3">
@@ -76,20 +83,29 @@
                         <option value="">Select Institute</option>
                         @if (institutes != null)
                         {
-                            @foreach(var i in institutes) {
+                            @foreach (var i in institutes)
+                            {
                                 <option value="@i.Id" selected="@(i.Id == Model.InstituteId)">@i.Name</option>
                             }
- }
+                        }
                     </select>
                 </div>
                 <div class="col-md-3">
-                    <label class="form-label">Program Level <span class="text-danger">*</span></label>
-                    <select name="ProgramLevelId" class="form-select" required>
+                    <label class="form-label">Program Level</label>
+                    <select name="ProgramLevelId" class="form-select">
                         <option value="">Select Program Level</option>
+                        @if (programLevels != null)
+                        {
+                            @foreach (var pl in programLevels)
+                            {
+                                <option value="@pl.Id" selected="@(pl.Id == Model.ProgramLevelId)">@pl.Name</option>
+                            }
+                        }
                     </select>
                 </div>
             </div>
 
+           
             <div class="row mb-3">
                 <div class="col-md-3">
                     <label class="form-label">Stream <span class="text-danger">*</span></label>
@@ -97,10 +113,11 @@
                         <option value="">Select Stream</option>
                         @if (streams != null)
                         {
-                            @foreach(var s in streams) {
+                            @foreach (var s in streams)
+                            {
                                 <option value="@s.Id" selected="@(s.Id == Model.StreamId)">@s.Name</option>
                             }
- }
+                        }
                     </select>
                 </div>
                 <div class="col-md-3">
@@ -109,10 +126,11 @@
                         <option value="">Select Specialization</option>
                         @if (specializations != null)
                         {
-                            @foreach(var s in specializations) {
+                            @foreach (var s in specializations)
+                            {
                                 <option value="@s.Id" selected="@(s.Id == Model.SpecializationId)">@s.Name</option>
                             }
- }
+                        }
                     </select>
                 </div>
                 <div class="col-md-3">
@@ -121,10 +139,11 @@
                         <option value="">Select Program Duration</option>
                         @if (durations != null)
                         {
-                            @foreach(var d in durations) {
+                            @foreach (var d in durations)
+                            {
                                 <option value="@d.Id" selected="@(d.Id == Model.ProgramDurationId)">@d.Name</option>
                             }
- }
+                        }
                     </select>
                 </div>
                 <div class="col-md-3">
@@ -146,6 +165,13 @@
                     <label class="form-label">Min. Education Required</label>
                     <select name="QualificationLevelId" class="form-select">
                         <option value="">Select Qualification Level</option>
+                        @if (qualificationLevels != null)
+                        {
+                            @foreach (var ql in qualificationLevels)
+                            {
+                                <option value="@ql.Id" selected="@(ql.Id == Model.QualificationLevelId)">@ql.Name</option>
+                            }
+                        }
                     </select>
                 </div>
                 <div class="col-md-3">
@@ -154,47 +180,51 @@
                         <option value="">Select Type Of Grade</option>
                         @if (grades != null)
                         {
-                            @foreach(var g in grades) {
+                            @foreach (var g in grades)
+                            {
                                 <option value="@g.Id" selected="@(g.Id == Model.TypeOfGradeId)">@g.Name</option>
                             }
- }
+                        }
                     </select>
                 </div>
             </div>
 
+            <!-- Row 5: Scores Required, Total Annual Fees, Max Backlog Allowed -->
             <div class="row mb-3">
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <label class="form-label">Scores Required</label>
                     <input type="text" name="ScoresRequired" value="@Model.ScoresRequired" class="form-control" placeholder="Enter Score Required" />
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <label class="form-label">Total Annual Fees <span class="text-danger">*</span></label>
                     <input type="number" step="0.01" name="TotalAnnualFees" value="@Model.TotalAnnualFees" class="form-control" placeholder="Enter Total Annual Fees" required />
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <label class="form-label">Max Backlog Allowed</label>
                     <input type="text" name="MaxBacklogAllowed" value="@Model.MaxBacklogAllowed" class="form-control" placeholder="Enter Max Backlog Allowed" />
                 </div>
+                <div class="col-md-3"></div>
             </div>
 
-            <div class="row mb-3">
-                <div class="col-auto form-check">
+            <!-- Row 6: Test Requirements Checkboxes -->
+            <div class="row mb-3 align-items-center">
+                <div class="col-auto form-check me-3">
                     <input class="form-check-input" type="checkbox" name="IsIELTSRequired" id="chkIELTS" value="true" checked="@Model.IsIELTSRequired" />
                     <label class="form-check-label" for="chkIELTS">IELTS Required ?</label>
                 </div>
-                <div class="col-auto form-check">
+                <div class="col-auto form-check me-3">
                     <input class="form-check-input" type="checkbox" name="IsTOEFLRequired" value="true" checked="@Model.IsTOEFLRequired" />
                     <label class="form-check-label">TOEFL Required ?</label>
                 </div>
-                <div class="col-auto form-check">
+                <div class="col-auto form-check me-3">
                     <input class="form-check-input" type="checkbox" name="IsGRERequired" value="true" checked="@Model.IsGRERequired" />
                     <label class="form-check-label">GRE Required ?</label>
                 </div>
-                <div class="col-auto form-check">
+                <div class="col-auto form-check me-3">
                     <input class="form-check-input" type="checkbox" name="IsGMATRequired" value="true" checked="@Model.IsGMATRequired" />
                     <label class="form-check-label">GMAT Required ?</label>
                 </div>
-                <div class="col-auto form-check">
+                <div class="col-auto form-check me-3">
                     <input class="form-check-input" type="checkbox" name="IsPTERequired" value="true" checked="@Model.IsPTERequired" />
                     <label class="form-check-label">PTE Required ?</label>
                 </div>
@@ -204,41 +234,51 @@
                 </div>
             </div>
 
-            <div id="ieltsFields" class="row mb-3" style="@(Model.IsIELTSRequired ? "" : "display:none;")">
-                <div class="col-md-2">
-                    <label class="form-label">IELTS Listening</label>
-                    <input type="text" name="IELTSListening" value="@Model.IELTSListening" class="form-control" />
-                </div>
-                <div class="col-md-2">
-                    <label class="form-label">IELTS Reading</label>
-                    <input type="text" name="IELTSReading" value="@Model.IELTSReading" class="form-control" />
-                </div>
-                <div class="col-md-2">
-                    <label class="form-label">IELTS Writing</label>
-                    <input type="text" name="IELTSWriting" value="@Model.IELTSWriting" class="form-control" />
-                </div>
-                <div class="col-md-2">
-                    <label class="form-label">IELTS Speaking</label>
-                    <input type="text" name="IELTSSpeaking" value="@Model.IELTSSpeaking" class="form-control" />
-                </div>
-                <div class="col-md-2">
-                    <label class="form-label">IELTS Over All</label>
-                    <input type="text" name="IELTSOverAll" value="@Model.IELTSOverAll" class="form-control" />
-                    <div class="form-check mt-1">
-                        <input class="form-check-input" type="checkbox" name="IsIELTSRelax" value="true" checked="@Model.IsIELTSRelax" />
-                        <label class="form-check-label">IELTS Relx?</label>
+            <!-- Row 7: IELTS Sub-fields (4 columns per row matching reference UI) -->
+            <div id="ieltsFields" style="@(Model.IsIELTSRequired ? "" : "display:none;")">
+                <div class="row mb-3">
+                    <div class="col-md-3">
+                        <label class="form-label">IELTS Listening <span class="text-danger">*</span></label>
+                        <input type="text" name="IELTSListening" value="@Model.IELTSListening" class="form-control" />
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">IELTS Reading <span class="text-danger">*</span></label>
+                        <input type="text" name="IELTSReading" value="@Model.IELTSReading" class="form-control" />
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">IELTS Writing <span class="text-danger">*</span></label>
+                        <input type="text" name="IELTSWriting" value="@Model.IELTSWriting" class="form-control" />
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">IELTS Speaking <span class="text-danger">*</span></label>
+                        <input type="text" name="IELTSSpeaking" value="@Model.IELTSSpeaking" class="form-control" />
                     </div>
                 </div>
-                <div class="col-md-1">
-                    <label class="form-label">IELTS Modules</label>
-                    <input type="text" name="IELTSModules" value="@Model.IELTSModules" class="form-control" />
-                </div>
-                <div class="col-md-1">
-                    <label class="form-label">IELTS Score</label>
-                    <input type="text" name="IELTSScore" value="@Model.IELTSScore" class="form-control" />
+
+                <div class="row mb-3 align-items-center">
+                    <div class="col-md-3">
+                        <label class="form-label">IELTS Over All <span class="text-danger">*</span></label>
+                        <div class="d-flex align-items-center gap-2">
+                            <input type="text" name="IELTSOverAll" value="@Model.IELTSOverAll" class="form-control" />
+                            <div class="form-check text-nowrap mb-0">
+                                <input class="form-check-input" type="checkbox" name="IsIELTSRelax" value="true" checked="@Model.IsIELTSRelax" id="chkRelx" />
+                                <label class="form-check-label ms-1" for="chkRelx">IELTS Relx?</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">IELTS Modules <span class="text-danger">*</span></label>
+                        <input type="text" name="IELTSModules" value="@Model.IELTSModules" class="form-control" />
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">IELTS Score <span class="text-danger">*</span></label>
+                        <input type="text" name="IELTSScore" value="@Model.IELTSScore" class="form-control" />
+                    </div>
+                    <div class="col-md-3"></div>
                 </div>
             </div>
 
+            <!-- Row 8: Populate Institute Address & Program URL (2 per row) -->
             <div class="row mb-3">
                 <div class="col-md-6">
                     <label class="form-label">Populate Institute Address</label>
@@ -250,6 +290,7 @@
                 </div>
             </div>
 
+            <!-- Row 9: Description & Remarks (2 per row) -->
             <div class="row mb-3">
                 <div class="col-md-6">
                     <label class="form-label">Description</label>
@@ -261,6 +302,7 @@
                 </div>
             </div>
 
+            <!-- Buttons -->
             @if (isEdit)
             {
                 <button type="submit" class="btn btn-primary">Update</button>
@@ -302,4 +344,3 @@
         });
     </script>
 }
-

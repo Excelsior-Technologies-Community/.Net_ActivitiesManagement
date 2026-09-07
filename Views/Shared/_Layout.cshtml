@@ -6,43 +6,91 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" />
     <style>
-        body { background:#f4f6f9; }
+        body {
+            background: #f4f6f9;
+        }
+
         .sidebar {
-            width: 240px; min-height: 100vh; background:#1c1f2b; color:#fff; position:fixed;
+            width: 240px;
+            height: 100vh;
+            background: #1c1f2b;
+            color: #fff;
+            position: fixed;
+            top: 0;
+            left: 0;
+            overflow-y: auto;
+            overflow-x: hidden;
         }
-        .sidebar h4 { padding: 20px; margin:0; font-weight:700; }
-        .sidebar a {
-            display:block; padding:12px 20px; color:#c9ccd6; text-decoration:none;
+
+            .sidebar h4 {
+                padding: 20px;
+                margin: 0;
+                font-weight: 700;
+            }
+
+            .sidebar a {
+                display: block;
+                padding: 12px 20px;
+                color: #c9ccd6;
+                text-decoration: none;
+            }
+
+                .sidebar a:hover, .sidebar a.active {
+                    background: #2b2f3f;
+                    color: #fff;
+                }
+
+            .sidebar::-webkit-scrollbar {
+                width: 6px;
+            }
+
+            .sidebar::-webkit-scrollbar-track {
+                background: #1c1f2b;
+            }
+
+            .sidebar::-webkit-scrollbar-thumb {
+                background: #444a5e;
+                border-radius: 10px;
+            }
+
+                .sidebar::-webkit-scrollbar-thumb:hover {
+                    background: #5a6178;
+                }
+
+        .main-content {
+            margin-left: 240px;
+            padding: 25px;
         }
-        .sidebar a:hover, .sidebar a.active { background:#2b2f3f; color:#fff; }
-        .main-content { margin-left: 240px; padding: 25px; }
     </style>
 </head>
 <body>
     <div class="sidebar">
-        <h4>Admin </h4>
+        <h4>     Admin </h4>
         <nav>
-        <a asp-controller="ActionType" asp-action="Index"><i class="bi bi-calendar2-check-fill"></i> Action</a>
-        <a asp-controller="ActivitiesMaster" asp-action="Index"><i class="bi bi-lightning-charge-fill"></i> Activity</a>
-        <a asp-controller="Country" asp-action="Index"><i class="bi bi-globe-americas"></i> Country</a>
-        <a asp-controller="State" asp-action="Index"><i class="bi bi-bank"></i> State</a>
-        <a asp-controller="City" asp-action="Index"><i class="bi bi-buildings"></i> City</a>
-        <a asp-controller="Area" asp-action="Index"><i class="bi bi-pin-map-fill"></i> Area</a>
-        <a asp-controller="ExamType" asp-action="Index"><i class="bi bi-mortarboard-fill"></i> Exam Type</a>
-        <a asp-controller="ExamProvider" asp-action="Index"><i class="bi bi-building-check"></i> Exam Provider</a>
-        <a asp-controller="ExamCenter" asp-action="Index"><i class="bi bi-geo-alt-fill"></i> Exam Center</a>
-        <a asp-controller="InstituteType" asp-action="Index"><i class="bi bi-journal-check"></i> Institute Type</a>
-        <a asp-controller="Institute" asp-action="Index"><i class="bi bi-bank2"></i> Institute List</a>
-        <a asp-controller="Grade" asp-action="Index"><i class="bi bi-award"></i> Grade List</a>
-        <a asp-controller="Department" asp-action="Index"><i class="bi bi-houses"></i> Department</a>
-        <a asp-controller="Currency" asp-action="Index"><i class="bi bi-currency-exchange"></i> Currency</a>
-        <a asp-controller="Stream" asp-action="Index"><i class="bi bi-diagram-3"></i> Stream</a>
-        <a asp-controller="Specialization" asp-action="Index"><i class="bi bi-diagram-2"></i> Specialization</a>
-        <a asp-controller="Program" asp-action="Index"><i class="bi bi-diagram-3"></i> Program</a>
-        </nav>
+            <a asp-controller="ActionType" asp-action="Index"><i class="bi bi-calendar2-check-fill"></i> Action</a>
+            <a asp-controller="ActivitiesMaster" asp-action="Index"><i class="bi bi-lightning-charge-fill"></i> Activity</a>
+            <a asp-controller="Country" asp-action="Index"><i class="bi bi-globe-americas"></i> Country</a>
+            <a asp-controller="State" asp-action="Index"><i class="bi bi-bank"></i> State</a>
+            <a asp-controller="City" asp-action="Index"><i class="bi bi-buildings"></i> City</a>
+            <a asp-controller="Area" asp-action="Index"><i class="bi bi-pin-map-fill"></i> Area</a>
+            <a asp-controller="ExamType" asp-action="Index"><i class="bi bi-mortarboard-fill"></i> Exam Type</a>
+            <a asp-controller="ExamProvider" asp-action="Index"><i class="bi bi-building-check"></i> Exam Provider</a>
+            <a asp-controller="ExamCenter" asp-action="Index"><i class="bi bi-geo-alt-fill"></i> Exam Center</a>
+            <a asp-controller="InstituteType" asp-action="Index"><i class="bi bi-journal-check"></i> Institute Type</a>
+            <a asp-controller="Institute" asp-action="Index"><i class="bi bi-bank2"></i> Institute List</a>
+            <a asp-controller="Grade" asp-action="Index"><i class="bi bi-award"></i> Grade List</a>
+            <a asp-controller="Department" asp-action="Index"><i class="bi bi-houses"></i> Department</a>
+            <a asp-controller="Currency" asp-action="Index"><i class="bi bi-currency-exchange"></i> Currency</a>
+            <a asp-controller="Stream" asp-action="Index"><i class="bi bi-star"></i> Stream</a>
+            <a asp-controller="Specialization" asp-action="Index"><i class="bi bi-award"></i> Specialization</a>
+            <a asp-controller="Program" asp-action="Index"><i class="bi bi-collection"></i> Program</a>
+            <a asp-controller="ProgramType" asp-action="Index"><i class="bi bi-tags"></i> Program Type</a>
+            <a asp-controller="EmailConfig" asp-action="Index"><i class="bi bi-envelope-at"></i> Email Configration</a>
+            <a asp-controller="QuestionMaster" asp-action="Index"><i class="bi bi-envelope-at"></i> Question Master</a>
+
+        </nav>i
     </div>
     <div class="main-content">
-       
         @RenderBody()
     </div>
     <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
