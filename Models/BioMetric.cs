@@ -1,6 +1,6 @@
 ﻿namespace ActivitiesManagement.Models
 {
-    public class CaseClosureReason
+    public class BioMetric
     {
         public int Id { get; set; }
         public string Title { get; set; }

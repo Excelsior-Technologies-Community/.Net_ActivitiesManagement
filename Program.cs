@@ -32,6 +32,10 @@ namespace ActivitiesManagement
             builder.Services.AddScoped<ProgramTypeRepository>();
             builder.Services.AddScoped<EMailConfigRepository>();
             builder.Services.AddScoped<QuestionMasterRepository>();
+            builder.Services.AddScoped<CaseClosureReasonRepository>();
+            builder.Services.AddScoped<MasterStatusRepository>();
+            builder.Services.AddScoped<VisaApplicationRepository>();
+            builder.Services.AddScoped<BioMetricRepository>();
             var app = builder.Build();
 
             if (!app.Environment.IsDevelopment())
