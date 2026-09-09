@@ -1,0 +1,299 @@
+﻿@model ActivitiesManagement.Models.Company
+@{
+    bool isEdit = Model.Id != 0;
+    ViewData["Title"] = isEdit ? "Edit Company" : "Add Company";
+    var countryList = ViewBag.CountryList as List<ActivitiesManagement.Models.LookupItem>;
+}
+
+<style>
+    .logo-preview-circle {
+        width: 110px;
+        height: 110px;
+        border-radius: 50%;
+        border: 1px solid #ced4da;
+        background: #f8f9fa;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        text-align: center;
+    }
+
+        .logo-preview-circle img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+    .logo-preview-text {
+        font-size: 0.75rem;
+        line-height: 1.2;
+    }
+</style>
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <div>
+        <h4 class="fw-bold mb-0">@(isEdit ? "EDIT" : "ADD") COMPANY</h4>
+        <small class="text-muted">Dashboard / Company / @(isEdit ? "Edit" : "Add") Company</small>
+    </div>
+    <a asp-action="Index" class="btn btn-primary">BACK</a>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        <form asp-action="AddEdit" method="post" enctype="multipart/form-data">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="Id" value="@Model.Id" />
+
+            <div class="row mb-3">
+                <div class="col-md-4">
+                    <label class="form-label">Registration Date <span class="text-danger">*</span></label>
+                    <input type="date" name="RegistrationDate" value="@(Model.RegistrationDate?.ToString("yyyy-MM-dd"))" class="form-control" required />
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">Company Name <span class="text-danger">*</span></label>
+                    <input type="text" name="CompanyName" value="@Model.CompanyName" class="form-control" placeholder="Enter Company Name" required />
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">Contact Person1 Name <span class="text-danger">*</span></label>
+                    <input type="text" name="ContactPerson1Name" value="@Model.ContactPerson1Name" class="form-control" placeholder="Enter Contact Person1 Name" required />
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-3">
+                    <label class="form-label">Contact Person1 Mobile <span class="text-danger">*</span></label>
+                    <input type="text" name="ContactPerson1Mobile" value="@Model.ContactPerson1Mobile" class="form-control" placeholder="Enter Contact Person1 Mobile" required />
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Contact Person2 Name</label>
+                    <input type="text" name="ContactPerson2Name" value="@Model.ContactPerson2Name" class="form-control" placeholder="Enter Contact Person2 Name" />
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Contact Person2 Mobile</label>
+                    <input type="text" name="ContactPerson2Mobile" value="@Model.ContactPerson2Mobile" class="form-control" placeholder="Enter Contact Person2 Mobile" />
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Email <span class="text-danger">*</span></label>
+                    <input type="email" name="Email" value="@Model.Email" class="form-control" placeholder="Enter Email" required />
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-9">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Website</label>
+                            <input type="text" name="Website" value="@Model.Website" class="form-control" placeholder="Enter Website" />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Company Map Link</label>
+                            <input type="text" name="CompanyMapLink" value="@Model.CompanyMapLink" class="form-control" placeholder="Enter Company Map Link" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <label class="form-label">Company Description</label>
+                            <input type="text" name="CompanyDescription" value="@Model.CompanyDescription" class="form-control" placeholder="Enter Company Description" />
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 text-center">
+                    <label class="form-label d-block">Logo</label>
+                    <div id="logoPreviewCircle" class="logo-preview-circle mb-2 mx-auto">
+                        @if (!string.IsNullOrWhiteSpace(Model.CompanyLogo))
+                        {
+                            <img id="logoPreviewImg" src="@Model.CompanyLogo" alt="Logo" />
+                        }
+                        else
+                        {
+                            <span id="logoPreviewText" class="text-muted logo-preview-text">NO IMAGE<br />AVAILABLE</span>
+                            <img id="logoPreviewImg" src="" alt="Logo" style="display:none;" />
+                        }
+                    </div>
+                    <input type="file" id="logoFile" name="logoFile" class="form-control form-control-sm" accept="image/*" />
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Address <span class="text-danger">*</span></label>
+                <input type="text" name="Address" value="@Model.Address" class="form-control" placeholder="Enter Company Address" required />
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-4">
+                    <label class="form-label">Country <span class="text-danger">*</span></label>
+                    <select id="ddlCountry" name="CountryId" class="form-select" required>
+                        <option value="">Select Country</option>
+                        @if (countryList != null)
+                        {
+                            foreach (var c in countryList)
+                            {
+                                <option value="@c.Id" data-title="@c.Title" selected="@(Model.CountryId == c.Id)">@c.Title</option>
+                            }
+                        }
+                    </select>
+                    <input type="hidden" id="CountryName" name="CountryName" value="@Model.CountryName" />
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">State <span class="text-danger">*</span></label>
+                    <select id="ddlState" name="StateId" class="form-select" required>
+                        <option value="">Select State</option>
+                    </select>
+                    <input type="hidden" id="StateName" name="StateName" value="@Model.StateName" />
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">City <span class="text-danger">*</span></label>
+                    <select id="ddlCity" name="CityId" class="form-select" required>
+                        <option value="">Select City</option>
+                    </select>
+                    <input type="hidden" id="CityName" name="CityName" value="@Model.CityName" />
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-4">
+                    <label class="form-label">Area <span class="text-danger">*</span></label>
+                    <select id="ddlArea" name="AreaId" class="form-select" required>
+                        <option value="">Select Area</option>
+                    </select>
+                    <input type="hidden" id="AreaName" name="Area" value="@Model.Area" />
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">Pincode <span class="text-danger">*</span></label>
+                    <input type="text" name="Pincode" value="@Model.Pincode" class="form-control" placeholder="Enter Pincode" required />
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">GST Number <span class="text-danger">*</span></label>
+                    <input type="text" name="GSTNumber" value="@Model.GSTNumber" class="form-control" placeholder="Enter GST Number" required />
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Term & Conditions: <span class="text-danger">*</span></label>
+                <textarea id="termsEditor" name="TermAndConditions">@Html.Raw(Model.TermAndConditions)</textarea>
+            </div>
+
+            @if (isEdit)
+            {
+                <button type="submit" class="btn btn-primary" id="btnSubmit">Update</button>
+            }
+            else
+            {
+                <div class="d-flex gap-2">
+                    <button type="submit" name="action" value="save" class="btn btn-primary" id="btnSubmit">Save</button>
+                    <button type="submit" name="action" value="saveAndAddAnother" class="btn btn-success">Save & Add Another</button>
+                    <a asp-action="Index" class="btn btn-danger">Cancel</a>
+                </div>
+            }
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/tinymce@6/tinymce.min.js"></script>
+    <script>
+        tinymce.init({
+            selector: '#termsEditor',
+            height: 300,
+            menubar: false,
+            plugins: 'advlist autolink lists link table charmap insertdatetime wordcount code fullscreen',
+            toolbar:
+                'undo redo | blocks fontfamily fontsize | ' +
+                'bold italic underline strikethrough forecolor | ' +
+                'alignleft aligncenter alignright alignjustify | ' +
+                'indent outdent | blockquote numlist bullist | ' +
+                'link unlink table hr charmap | removeformat code | fullscreen',
+            setup: function (editor) {
+                editor.on('change keyup', function () {
+                    editor.save();
+                });
+            }
+        });
+
+        document.querySelector('form').addEventListener('submit', function () {
+            if (typeof tinymce !== 'undefined') {
+                tinymce.triggerSave();
+            }
+        });
+
+        document.getElementById('logoFile').addEventListener('change', function (e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function (ev) {
+                const img = document.getElementById('logoPreviewImg');
+                const txt = document.getElementById('logoPreviewText');
+                img.src = ev.target.result;
+                img.style.display = 'block';
+                if (txt) txt.style.display = 'none';
+            };
+            reader.readAsDataURL(file);
+        });
+
+       
+        const ddlCountry = document.getElementById('ddlCountry');
+        const ddlState = document.getElementById('ddlState');
+        const ddlCity = document.getElementById('ddlCity');
+        const ddlArea = document.getElementById('ddlArea');
+
+        const selectedStateId = "@Model.StateId";
+        const selectedCityId = "@Model.CityId";
+        const selectedAreaId = "@Model.AreaId";
+
+        function fillDropdown(select, items, selectedId, placeholder) {
+            select.innerHTML = `<option value="">${placeholder}</option>`;
+            items.forEach(item => {
+                const opt = document.createElement('option');
+                opt.value = item.id ?? item.Id;
+                opt.text = item.title ?? item.Title;
+                opt.dataset.title = item.title ?? item.Title;
+                if (String(opt.value) === String(selectedId)) opt.selected = true;
+                select.appendChild(opt);
+            });
+        }
+
+        function loadStates(countryId, keepSelection) {
+            if (!countryId) { fillDropdown(ddlState, [], null, 'Select State'); fillDropdown(ddlCity, [], null, 'Select City'); fillDropdown(ddlArea, [], null, 'Select Area'); return; }
+            fetch(`/Company/GetStates?countryId=${countryId}`)
+                .then(r => r.json())
+                .then(data => fillDropdown(ddlState, data, keepSelection ? selectedStateId : null, 'Select State'));
+        }
+
+        function loadCities(stateId, keepSelection) {
+            if (!stateId) { fillDropdown(ddlCity, [], null, 'Select City'); fillDropdown(ddlArea, [], null, 'Select Area'); return; }
+            fetch(`/Company/GetCities?stateId=${stateId}`)
+                .then(r => r.json())
+                .then(data => fillDropdown(ddlCity, data, keepSelection ? selectedCityId : null, 'Select City'));
+        }
+
+        function loadAreas(cityId, keepSelection) {
+            if (!cityId) { fillDropdown(ddlArea, [], null, 'Select Area'); return; }
+            fetch(`/Company/GetAreas?cityId=${cityId}`)
+                .then(r => r.json())
+                .then(data => fillDropdown(ddlArea, data, keepSelection ? selectedAreaId : null, 'Select Area'));
+        }
+
+        ddlCountry.addEventListener('change', function () {
+            document.getElementById('CountryName').value = this.selectedOptions[0]?.dataset.title || '';
+            loadStates(this.value, false);
+        });
+        ddlState.addEventListener('change', function () {
+            document.getElementById('StateName').value = this.selectedOptions[0]?.dataset.title || '';
+            loadCities(this.value, false);
+        });
+        ddlCity.addEventListener('change', function () {
+            document.getElementById('CityName').value = this.selectedOptions[0]?.dataset.title || '';
+            loadAreas(this.value, false);
+        });
+        ddlArea.addEventListener('change', function () {
+            document.getElementById('AreaName').value = this.selectedOptions[0]?.dataset.title || '';
+        });
+
+        if (ddlCountry.value) {
+            loadStates(ddlCountry.value, true);
+            setTimeout(() => { if (ddlState.value) loadCities(ddlState.value, true); }, 400);
+            setTimeout(() => { if (ddlCity.value) loadAreas(ddlCity.value, true); }, 800);
+        }
+    </script>
+}

@@ -1,0 +1,223 @@
+﻿@model ActivitiesManagement.Models.Branch
+@{
+    bool isEdit = Model.Id != 0;
+    ViewData["Title"] = isEdit ? "Edit Branch" : "Add Branch";
+    var companies = ViewBag.CompanyList as List<ActivitiesManagement.Models.DropdownItem>;
+    var countries = ViewBag.CountryList as List<ActivitiesManagement.Models.DropdownItem>;
+    var states = ViewBag.StateList as List<ActivitiesManagement.Models.DropdownItem>;
+    var cities = ViewBag.CityList as List<ActivitiesManagement.Models.DropdownItem>;
+    var areas = ViewBag.AreaList as List<ActivitiesManagement.Models.DropdownItem>;
+    var subBranchOptions = ViewBag.SubBranchOptions as List<ActivitiesManagement.Models.SubBranchOption>;
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <div>
+        <h4 class="fw-bold mb-0">@(isEdit ? "EDIT" : "ADD") BRANCH</h4>
+        <small class="text-muted">Dashboard / Branch / @(isEdit ? "Edit" : "Add") Branch</small>
+    </div>
+    <a asp-action="Index" class="btn btn-primary">BACK</a>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        <form asp-action="AddEdit" method="post">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="Id" value="@Model.Id" />
+
+            <div class="form-check mb-3">
+                <input class="form-check-input" type="checkbox" name="IsHeadOffice" value="true" checked="@Model.IsHeadOffice" id="chkHeadOffice" />
+                <label class="form-check-label" for="chkHeadOffice">@(isEdit ? "Is Head Office ?" : "Head Office?")</label>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-4">
+                    <label class="form-label">Company <span class="text-danger">*</span></label>
+                    <select name="CompanyId" class="form-select" required>
+                        <option value="">Select Company</option>
+                        @if (companies != null)
+                        {
+                            @foreach(var c in companies) {
+                                <option value="@c.Id" selected="@(c.Id == Model.CompanyId)">@c.Name</option>
+                            }
+ }
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">Branch Code <span class="text-danger">*</span></label>
+                    <input type="text" name="BranchCode" value="@Model.BranchCode" class="form-control" placeholder="Enter Branch Code" required />
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">Branch <span class="text-danger">*</span></label>
+                    <input type="text" name="BranchName" value="@Model.BranchName" class="form-control" placeholder="Enter Branch" required />
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-4">
+                    <label class="form-label">Contact Person Name <span class="text-danger">*</span></label>
+                    <input type="text" name="ContactPersonName" value="@Model.ContactPersonName" class="form-control" placeholder="Enter Contact Person Name" required />
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">Contact Number <span class="text-danger">*</span></label>
+                    <input type="text" name="ContactNumber" value="@Model.ContactNumber" class="form-control" placeholder="Enter Contact Number" required />
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">Email Address <span class="text-danger">*</span></label>
+                    <input type="email" name="Email" value="@Model.Email" class="form-control" placeholder="Enter Email Address" required />
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-2">
+                    <label class="form-label">Country <span class="text-danger">*</span></label>
+                    <select name="CountryId" id="ddlCountry" class="form-select" required>
+                        <option value="">Select Country</option>
+                        @if (countries != null)
+                        {
+                            @foreach(var c in countries) {
+                                <option value="@c.Id" selected="@(c.Id == Model.CountryId)">@c.Name</option>
+                            }
+ }
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">State <span class="text-danger">*</span></label>
+                    <select name="StateId" id="ddlState" class="form-select" required>
+                        <option value="">Select State</option>
+                        @if (states != null)
+                        {
+                            @foreach(var s in states) {
+                                <option value="@s.Id" selected="@(s.Id == Model.StateId)">@s.Name</option>
+                            }
+ }
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">City <span class="text-danger">*</span></label>
+                    <select name="CityId" id="ddlCity" class="form-select" required>
+                        <option value="">Select City</option>
+                        @if (cities != null)
+                        {
+                            @foreach(var c in cities) {
+                                <option value="@c.Id" selected="@(c.Id == Model.CityId)">@c.Name</option>
+                            }
+ }
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">Area <span class="text-danger">*</span></label>
+                    <select name="AreaId" id="ddlArea" class="form-select" required>
+                        <option value="">Select Area</option>
+                        @if (areas != null)
+                        {
+                            @foreach(var a in areas) {
+                                <option value="@a.Id" selected="@(a.Id == Model.AreaId)">@a.Name</option>
+                            }
+ }
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">Pincode <span class="text-danger">*</span></label>
+                    <input type="text" name="Pincode" value="@Model.Pincode" class="form-control" required />
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label class="form-label">Address <span class="text-danger">*</span></label>
+                    <textarea name="Address" class="form-control" rows="3" placeholder="Enter Address" required>@Model.Address</textarea>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Description</label>
+                    <textarea name="Description" class="form-control" rows="3" placeholder="Enter Description">@Model.Description</textarea>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Assign Sub-Branches</label>
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th style="width:40px;"><input type="checkbox" id="chkSelectAll" /></th>
+                            <th>Branch Name</th>
+                            <th>Branch Code</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (subBranchOptions != null)
+                        {
+                            @foreach (var sb in subBranchOptions)
+                            {
+                                <tr>
+                                    <td><input type="checkbox" class="sub-branch-chk" name="SelectedSubBranchIds" value="@sb.Id" checked="@sb.IsSelected" /></td>
+                                    <td>@sb.BranchName</td>
+                                    <td>@sb.BranchCode</td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            @if (isEdit)
+            {
+                <button type="submit" class="btn btn-primary">Update</button>
+            }
+            else
+            {
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-primary">Save</button>
+                    <button type="submit" name="action" value="saveAndAddAnother" class="btn btn-success">Save & Add Another</button>
+                    <a asp-action="Index" class="btn btn-danger">Cancel</a>
+                </div>
+            }
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.getElementById("chkSelectAll").addEventListener("change", function () {
+            document.querySelectorAll(".sub-branch-chk").forEach(chk => chk.checked = this.checked);
+        });
+
+        const ddlCountry = document.getElementById("ddlCountry");
+        const ddlState = document.getElementById("ddlState");
+        const ddlCity = document.getElementById("ddlCity");
+        const ddlArea = document.getElementById("ddlArea");
+
+        function populateSelect(select, items, placeholder) {
+            select.innerHTML = `<option value="">${placeholder}</option>`;
+            items.forEach(item => {
+                const opt = document.createElement("option");
+                opt.value = item.id;
+                opt.textContent = item.name;
+                select.appendChild(opt);
+            });
+        }
+
+        ddlCountry.addEventListener("change", function () {
+            ddlState.innerHTML = '<option value="">Select State</option>';
+            ddlCity.innerHTML = '<option value="">Select City</option>';
+            ddlArea.innerHTML = '<option value="">Select Area</option>';
+            if (!this.value) return;
+            fetch('@Url.Action("GetStates", "Branch")?countryId=' + this.value)
+                .then(res => res.json()).then(data => populateSelect(ddlState, data, "Select State"));
+        });
+
+        ddlState.addEventListener("change", function () {
+            ddlCity.innerHTML = '<option value="">Select City</option>';
+            ddlArea.innerHTML = '<option value="">Select Area</option>';
+            if (!this.value) return;
+            fetch('@Url.Action("GetCities", "Branch")?stateId=' + this.value)
+                .then(res => res.json()).then(data => populateSelect(ddlCity, data, "Select City"));
+        });
+
+        ddlCity.addEventListener("change", function () {
+            ddlArea.innerHTML = '<option value="">Select Area</option>';
+            if (!this.value) return;
+            fetch('@Url.Action("GetAreas", "Branch")?cityId=' + this.value)
+                .then(res => res.json()).then(data => populateSelect(ddlArea, data, "Select Area"));
+        });
+    </script>
+}
