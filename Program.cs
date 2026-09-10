@@ -40,6 +40,9 @@ namespace ActivitiesManagement
             builder.Services.AddScoped<CompanyRepository>();
             builder.Services.AddScoped<VisaTypeRepository>();
             builder.Services.AddScoped<BranchRepository>();
+            builder.Services.AddScoped<SourceOfInquiryRepository>();
+            builder.Services.AddScoped<SubSourceOfInquiryRepository>();
+            builder.Services.AddScoped<SecondarySourceOfEnquiryRepository>();
             var app = builder.Build();
 
             if (!app.Environment.IsDevelopment())

@@ -1,0 +1,68 @@
+﻿@model ActivitiesManagement.Models.SourceOfInquiry
+@{
+    bool isEdit = Model.Id != 0;
+    ViewData["Title"] = isEdit ? "Edit Source Of Inquiry" : "Add Source Of Inquiry";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <div>
+        <h4 class="fw-bold mb-0">@(isEdit ? "EDIT" : "ADD") SOURCE OF INQUIRY</h4>
+        <small class="text-muted">Dashboard / Source Of Inquiry / @(isEdit ? "Edit" : "Add") Source Of Inquiry</small>
+    </div>
+    <a asp-action="Index" class="btn btn-primary">BACK</a>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        <form asp-action="AddEdit" method="post">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="Id" value="@Model.Id" />
+
+            <div class="mb-3">
+                <label class="form-label">Title <span class="text-danger">*</span></label>
+                <input type="text" name="Title" value="@Model.Title" class="form-control" placeholder="Enter Title" required />
+            </div>
+
+            <div class="mb-3 d-flex flex-wrap gap-4">
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" asp-for="IsLead" />
+                    <label class="form-check-label" asp-for="IsLead">Is Lead</label>
+                </div>
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" asp-for="IsInquiry" />
+                    <label class="form-check-label" asp-for="IsInquiry">Is Inquiry</label>
+                </div>
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" asp-for="IsRegistration" />
+                    <label class="form-check-label" asp-for="IsRegistration">Is Registration</label>
+                </div>
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" asp-for="IsCoaching" />
+                    <label class="form-check-label" asp-for="IsCoaching">Is Coaching</label>
+                </div>
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" asp-for="IsProcess" />
+                    <label class="form-check-label" asp-for="IsProcess">Is Process</label>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Description</label>
+                <textarea name="Description" class="form-control" rows="3" placeholder="Enter Description">@Model.Description</textarea>
+            </div>
+
+            @if (isEdit)
+            {
+                <button type="submit" class="btn btn-primary">Update</button>
+            }
+            else
+            {
+                <div class="d-flex gap-2">
+                    <button type="submit" name="action" value="save" class="btn btn-primary">Save</button>
+                    <button type="submit" name="action" value="saveAndAddAnother" class="btn btn-success">Save & Add Another</button>
+                    <a asp-action="Index" class="btn btn-danger">Cancel</a>
+                </div>
+            }
+        </form>
+    </div>
+</div>

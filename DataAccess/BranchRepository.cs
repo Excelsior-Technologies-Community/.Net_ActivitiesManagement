@@ -133,7 +133,7 @@ namespace ActivitiesManagement.Repositories
             cmd.ExecuteNonQuery();
         }
 
-        // ---------- Sub-branch checklist ----------
+      
 
         public List<SubBranchOption> GetSubBranchOptions(long? excludeId, List<long> selectedIds)
         {
@@ -182,8 +182,7 @@ namespace ActivitiesManagement.Repositories
             cmd.ExecuteNonQuery();
         }
 
-        // ---------- Dropdowns ----------
-
+        
         public List<DropdownItem> GetCompanyDropdown()
         {
             var list = new List<DropdownItem>();
