@@ -1,4 +1,4 @@
-﻿using System.Linq;
+using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using ActivitiesManagement.Models;
 using ActivitiesManagement.DataAccess;
@@ -13,6 +13,7 @@ namespace ActivitiesManagement.Controllers
         {
             _repo = repo;
         }
+
 
         public IActionResult Index()
         {
@@ -36,8 +37,14 @@ namespace ActivitiesManagement.Controllers
     
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult AddEdit(SecondarySourceOfEnquiry model, string action)
+        public IActionResult AddEdit(SecondarySourceOfEnquiry model, string? action = null)
         {
+            if (string.IsNullOrWhiteSpace(model.Title))
+            {
+                ModelState.AddModelError("Title", "Title is required.");
+                return View(model);
+            }
+
             if (!ModelState.IsValid)
             {
                 return View(model);

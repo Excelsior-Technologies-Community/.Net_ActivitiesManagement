@@ -1,0 +1,625 @@
+@{
+    ViewData["Title"] = "Dashboard Settings";
+    string existingJson = ViewBag.ExistingSettingsJson as string ?? "[]";
+    var branchList = ViewBag.Branches as List<string> ?? new List<string>();
+    var companyList = ViewBag.Companies as List<string> ?? new List<string>();
+    var inquiryList = ViewBag.InquirySources as List<string> ?? new List<string>();
+    var activityList = ViewBag.Activities as List<ActivitiesManagement.Models.ActivityMaster> ?? new List<ActivitiesManagement.Models.ActivityMaster>();
+    var actionTypeList = ViewBag.ActionTypes as List<ActivitiesManagement.Models.ActionType> ?? new List<ActivitiesManagement.Models.ActionType>();
+    var masterStatusList = ViewBag.MasterStatuses as List<ActivitiesManagement.Models.MasterStatus> ?? new List<ActivitiesManagement.Models.MasterStatus>();
+    var serviceList = ViewBag.Services as List<ActivitiesManagement.Models.VisaType> ?? new List<ActivitiesManagement.Models.VisaType>();
+
+    var branchMetrics = new List<string> { "All" };
+    branchMetrics.AddRange(branchList);
+    branchMetrics.Add("Total");
+
+    var companyMetrics = new List<string> { "All" };
+    companyMetrics.AddRange(companyList);
+    companyMetrics.Add("Total");
+
+    var inquiryMetrics = new List<string> { "All" };
+    inquiryMetrics.AddRange(inquiryList);
+    inquiryMetrics.Add("Total");
+
+    
+    var topMatrixSections = new (string Id, string Title, string[] Metrics)[]
+    {
+        ("AssignedLead", "Assigned Lead", new[] { "All", "New Lead", "Follow-Ups Lead", "Converted Lead", "Closed Lead", "Total" }),
+        ("Inquiry", "Inquiry", inquiryMetrics.ToArray()),
+        ("BranchWiseInquiry", "Branch Wise Inquiry", branchMetrics.ToArray()),
+        ("AssignedClient", "Assigned Client", new[] { "All", "New Client", "Converted Client", "Registered Client", "Closed Client", "Total" }),
+        ("FollowUps", "Follow-Ups", new[] { "Today", "Over Due", "Total" })
+    };
+
+   
+    var bottomMatrixSections = new (string Id, string Title, string[] Metrics)[]
+    {
+        ("TodaysAttendance", "Today's Attendance", Array.Empty<string>()),
+        ("CompanyWiseOutstandingFees", "Company Wise Outstanding Fees", companyMetrics.ToArray())
+    };
+}
+
+<style>
+    .ds-section {
+        border-bottom: 1px solid #e5e7eb;
+        padding: 1rem 0;
+    }
+
+        .ds-section h6 {
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .ds-section .form-check {
+            display: inline-flex;
+            align-items: center;
+            margin-right: 1.25rem;
+            margin-bottom: 0.25rem;
+        }
+
+    .ds-toggle-row {
+        margin-bottom: 0.5rem;
+    }
+
+    .ds-table th, .ds-table td {
+        vertical-align: middle;
+        font-size: 0.9rem;
+    }
+</style>
+
+<h4 class="fw-bold">DASHBOARD SETTINGS</h4>
+<p class="text-muted">Dashboard / Dashboard Settings</p>
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        <form id="dsForm" asp-action="Save" method="post">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="SettingsJson" id="SettingsJson" />
+
+          
+            <div class="d-flex gap-4 mb-3 pb-2 border-bottom">
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="DashboardSettingsUserType" id="rdSpecificUser" value="Specific User" checked>
+                    <label class="form-check-label" for="rdSpecificUser">Specific User</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="DashboardSettingsUserType" id="rdSpecificUserType" value="Specific User Type">
+                    <label class="form-check-label" for="rdSpecificUserType">Specific User Type</label>
+                </div>
+            </div>
+
+           
+            @foreach (var sec in topMatrixSections)
+            {
+                <div class="ds-section" data-section="@sec.Id">
+                    <h6>@sec.Title</h6>
+                    <div class="ds-toggle-row">
+                        <label class="form-check"><input type="checkbox" class="form-check-input ds-type" value="Count"> <span class="form-check-label">Count</span></label>
+                        <label class="form-check"><input type="checkbox" class="form-check-input ds-type" value="List"> <span class="form-check-label">List</span></label>
+                    </div>
+                    @if (sec.Metrics.Length > 0)
+                    {
+                        <div>
+                            @foreach (var m in sec.Metrics)
+                            {
+                                <label class="form-check"><input type="checkbox" class="form-check-input ds-metric" value="@m"> <span class="form-check-label">@m</span></label>
+                            }
+                        </div>
+                    }
+                </div>
+            }
+
+            
+            <div class="ds-section" data-section="ClientStatusWise">
+                <h6>Client Status Wise</h6>
+                <div class="ds-toggle-row">
+                    <label class="form-check"><input type="checkbox" class="form-check-input" id="csw-count" value="Count" checked> <span class="form-check-label">Count</span></label>
+                    <label class="form-check"><input type="checkbox" class="form-check-input" id="csw-list" value="List"> <span class="form-check-label">List</span></label>
+                </div>
+                <div class="row g-2 align-items-end">
+                    <div class="col-md-3">
+                        <label class="form-label">Action Type <span class="text-danger">*</span></label>
+                        <select id="csw-actiontype" class="form-select">
+                            <option value="Activities Status">Activities Status</option>
+                            @foreach (var at in actionTypeList)
+                            {
+                                if (at.Title != "Activities Status")
+                                {
+                                    <option value="@at.Title">@at.Title</option>
+                                }
+                            }
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Action <span class="text-danger">*</span></label>
+                        <select id="csw-action" class="form-select">
+                            <option value="">Select Type</option>
+                            @foreach (var a in activityList)
+                            {
+                                <option value="@a.Title">@a.Title</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Start Code <span class="text-danger">*</span></label>
+                        <select id="csw-startcode" class="form-select">
+                            <option value="">Select Start</option>
+                            @foreach (var ms in masterStatusList)
+                            {
+                                <option value="@ms.StatusCode">@ms.StatusCode - @ms.Title</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <button type="button" class="btn btn-primary" id="btnAddClientStatusWise">ADD</button>
+                    </div>
+                </div>
+            </div>
+
+           
+            <div class="ds-section" data-section="ClientManualStatusWise">
+                <h6>Client Manual Status Wise</h6>
+                <div class="ds-toggle-row">
+                    <label class="form-check"><input type="checkbox" class="form-check-input" id="cmsw-count" value="Count" checked> <span class="form-check-label">Count</span></label>
+                    <label class="form-check"><input type="checkbox" class="form-check-input" id="cmsw-list" value="List"> <span class="form-check-label">List</span></label>
+                </div>
+                <div class="row g-2 align-items-end">
+                    <div class="col-md-4">
+                        <label class="form-label">Service Status Processes <span class="text-danger">*</span></label>
+                        <select id="cmsw-process" class="form-select">
+                            <option value="">Select Service</option>
+                            @foreach (var s in serviceList)
+                            {
+                                <option value="@s.Title">@s.Title</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Service Manual Status</label>
+                        <select id="cmsw-manualstatus" class="form-select">
+                            <option value="ALL">ALL</option>
+                            @foreach (var ms in masterStatusList)
+                            {
+                                <option value="@ms.StatusCode">@ms.StatusCode - @ms.Title</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <button type="button" class="btn btn-primary" id="btnAddClientManualStatusWise">ADD</button>
+                    </div>
+                </div>
+            </div>
+
+            
+            <div class="ds-section" data-section="ReceivedPayment">
+                <h6>Received Payment</h6>
+                <div>
+                    <label class="form-check"><input type="checkbox" class="form-check-input rp-metric" value="Registration Amount"> <span class="form-check-label">Registration Amount</span></label>
+                    <label class="form-check"><input type="checkbox" class="form-check-input rp-metric" value="B2B Billing"> <span class="form-check-label">B2B Billing</span></label>
+                    <label class="form-check"><input type="checkbox" class="form-check-input rp-metric" value="Institute Billing"> <span class="form-check-label">Institute Billing</span></label>
+                    <label class="form-check"><input type="checkbox" class="form-check-input rp-metric" value="Pending Fees"> <span class="form-check-label">Pending Fees</span></label>
+                    <label class="form-check"><input type="checkbox" class="form-check-input rp-metric" value="Other Amount Received"> <span class="form-check-label">Other Amount Received</span></label>
+                </div>
+                <div class="row g-2 align-items-end mt-2">
+                    <div class="col-md-3">
+                        <label class="form-label">Branch <span class="text-danger">*</span></label>
+                        <select id="rp-branch" class="form-select">
+                            <option value="ALL">ALL</option>
+                            @foreach (var b in branchList)
+                            {
+                                <option value="@b">@b</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <button type="button" class="btn btn-primary" id="btnAddReceivedPayment">ADD</button>
+                    </div>
+                </div>
+            </div>
+
+            
+            @{
+                var middleListSections = new (string Id, string Title, string[] Metrics)[]
+                {
+                        ("Chart", "Chart", new[] { "Client Status Chart", "Client Payment Chart", "Client Follow-Up Chart" }),
+                        ("CollegeApplication", "College Application", new[] { "Total Application", "Total Offer Received", "Total Conditional", "Total Unconditional" }),
+                        ("CourseOptions", "Course Options", new[] { "Total Course Options" }),
+                        ("FeesPayment", "Fees Payment", new[] { "Total Fees Payment" })
+                };
+            }
+
+            @foreach (var sec in middleListSections)
+            {
+                <div class="ds-section" data-section="@sec.Id">
+                    <h6>@sec.Title</h6>
+                    <div>
+                        @foreach (var m in sec.Metrics)
+                        {
+                            <label class="form-check"><input type="checkbox" class="form-check-input ds-widget" value="@m"> <span class="form-check-label">@m</span></label>
+                        }
+                    </div>
+                </div>
+            }
+
+           
+            @foreach (var sec in bottomMatrixSections)
+            {
+                <div class="ds-section" data-section="@sec.Id">
+                    <h6>@sec.Title</h6>
+                    <div class="ds-toggle-row">
+                        <label class="form-check"><input type="checkbox" class="form-check-input ds-type" value="Count"> <span class="form-check-label">Count</span></label>
+                        <label class="form-check"><input type="checkbox" class="form-check-input ds-type" value="List"> <span class="form-check-label">List</span></label>
+                    </div>
+                    @if (sec.Metrics.Length > 0)
+                    {
+                        <div>
+                            @foreach (var m in sec.Metrics)
+                            {
+                                <label class="form-check"><input type="checkbox" class="form-check-input ds-metric" value="@m"> <span class="form-check-label">@m</span></label>
+                            }
+                        </div>
+                    }
+                </div>
+            }
+
+          
+            <div class="ds-section" data-section="RemindMe">
+                <h6>Remind Me</h6>
+                <div>
+                    <label class="form-check"><input type="checkbox" class="form-check-input ds-widget" value="Remind Me"> <span class="form-check-label">Remind Me</span></label>
+                </div>
+            </div>
+
+          
+            <h6 class="mt-4">Count</h6>
+            <table class="table table-bordered ds-table text-center">
+                <thead class="table-light">
+                    <tr>
+                        <th>Title</th>
+                        <th>Type</th>
+                        <th>Action Type</th>
+                        <th>Action</th>
+                        <th>Action Value</th>
+                        <th style="width: 80px;">Remove</th>
+                    </tr>
+                </thead>
+                <tbody id="countTableBody"></tbody>
+            </table>
+
+            <h6 class="mt-4">List</h6>
+            <table class="table table-bordered ds-table text-center">
+                <thead class="table-light">
+                    <tr>
+                        <th>Title</th>
+                        <th>Type</th>
+                        <th>Action Type</th>
+                        <th>Action</th>
+                        <th>Action Value</th>
+                        <th style="width: 80px;">Remove</th>
+                    </tr>
+                </thead>
+                <tbody id="listTableBody"></tbody>
+            </table>
+
+            <div class="d-flex gap-2 mt-3 mb-4">
+                <button type="submit" class="btn btn-success px-4">Save</button>
+                <a asp-action="Index" class="btn btn-danger px-4">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="modal fade" id="saveModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content text-center p-4">
+            <div class="modal-body">
+                <i class="bi bi-check-circle text-success" style="font-size:4rem;"></i>
+                <h4 class="fw-bold mt-3">Success</h4>
+                <p class="text-muted">@TempData["SaveMessage"]</p>
+                <button type="button" class="btn btn-primary px-4" data-bs-dismiss="modal">Ok</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        let state = [];
+        let nextRowId = 1;
+
+        function render() {
+            const countBody = document.getElementById("countTableBody");
+            const listBody = document.getElementById("listTableBody");
+            countBody.innerHTML = "";
+            listBody.innerHTML = "";
+
+            state.forEach(row => {
+                const tr = document.createElement("tr");
+                const isCount = (row.type || "").toLowerCase() === "count";
+
+                tr.innerHTML = `
+                    <td>${row.title ?? ""}</td>
+                    <td>${row.type ?? ""}</td>
+                    <td>${row.actionType ?? ""}</td>
+                    <td>${row.action ?? ""}</td>
+                    <td>${row.actionValue ?? ""}</td>
+                    <td><button type="button" class="btn btn-sm btn-outline-danger" onclick="removeRow(${row.rowId})">Remove</button></td>
+                `;
+
+                if (isCount) {
+                    countBody.appendChild(tr);
+                } else {
+                    listBody.appendChild(tr);
+                }
+            });
+        }
+
+        function removeRow(rowId) {
+            const removed = state.find(r => r.rowId === rowId);
+            state = state.filter(r => r.rowId !== rowId);
+            render();
+
+            if (removed) {
+                syncCheckboxesAfterRemoval(removed);
+            }
+        }
+
+        function syncCheckboxesAfterRemoval(removed) {
+            const secTitle = removed.title;
+            let container = null;
+            document.querySelectorAll(".ds-section").forEach(sec => {
+                if (sec.dataset.section === removed.sourceSection || sec.querySelector("h6")?.textContent.trim() === secTitle) {
+                    container = sec;
+                }
+            });
+
+            if (!container) return;
+
+            const remainingInSec = state.filter(r => r.title === secTitle || r.sourceSection === container.dataset.section);
+
+            if (removed.action) {
+                const stillHasAction = remainingInSec.some(r => r.action === removed.action);
+                if (!stillHasAction) {
+                    const cb = container.querySelector(`.ds-metric[value="${CSS.escape(removed.action)}"], .ds-widget[value="${CSS.escape(removed.action)}"], .rp-metric[value="${CSS.escape(removed.action)}"]`);
+                    if (cb) cb.checked = false;
+
+                    const allCb = container.querySelector('.ds-metric[value="All"]');
+                    if (allCb) allCb.checked = false;
+                }
+            }
+
+            if (removed.type) {
+                const stillHasType = remainingInSec.some(r => (r.type || "").toLowerCase() === (removed.type || "").toLowerCase());
+                if (!stillHasType) {
+                    const typeCb = container.querySelector(`.ds-type[value="${CSS.escape(removed.type)}"]`);
+                    if (typeCb) typeCb.checked = false;
+                }
+            }
+        }
+
+        function addRow(row) {
+            row.rowId = nextRowId++;
+            state.push(row);
+        }
+
+        function recomputeMatrixSection(container) {
+            const sectionId = container.dataset.section;
+            const title = container.querySelector("h6").textContent.trim();
+
+            state = state.filter(r => r.sourceSection !== sectionId && r.title !== title);
+
+            const types = Array.from(container.querySelectorAll(".ds-type:checked")).map(el => el.value);
+            const metrics = Array.from(container.querySelectorAll(".ds-metric:checked")).map(el => el.value);
+
+            types.forEach(type => {
+                if (metrics.length > 0) {
+                    metrics.forEach(metric => {
+                        addRow({ title: title, type: type, action: metric, actionType: title, actionValue: "", sourceSection: sectionId });
+                    });
+                } else {
+                    addRow({ title: title, type: type, action: title, actionType: title, actionValue: "", sourceSection: sectionId });
+                }
+            });
+
+            render();
+        }
+
+        document.querySelectorAll(".ds-section").forEach(container => {
+            const hasMatrixInputs = container.querySelector(".ds-type") || container.querySelector(".ds-metric");
+            if (hasMatrixInputs) {
+                container.addEventListener("change", (e) => {
+                    if (e.target.classList.contains("ds-metric") && e.target.value === "All") {
+                        const isChecked = e.target.checked;
+                        container.querySelectorAll(".ds-metric").forEach(cb => {
+                            cb.checked = isChecked;
+                        });
+                    } else if (e.target.classList.contains("ds-metric") && e.target.value !== "All") {
+                        if (!e.target.checked) {
+                            const allCb = container.querySelector('.ds-metric[value="All"]');
+                            if (allCb) allCb.checked = false;
+                        }
+                    }
+
+                    if (e.target.classList.contains("ds-type") || e.target.classList.contains("ds-metric")) {
+                        recomputeMatrixSection(container);
+                    }
+                });
+            }
+        });
+
+        function recomputeWidgetSection(container) {
+            const sectionId = container.dataset.section;
+            const title = container.querySelector("h6").textContent.trim();
+            state = state.filter(r => r.sourceSection !== sectionId && r.title !== title);
+
+            const checked = Array.from(container.querySelectorAll(".ds-widget:checked")).map(el => el.value);
+            checked.forEach(metric => {
+                addRow({ title: title, type: "List", action: metric, actionType: title, actionValue: "", sourceSection: sectionId });
+            });
+            render();
+        }
+
+        document.querySelectorAll(".ds-section").forEach(container => {
+            if (container.querySelector(".ds-widget")) {
+                container.addEventListener("change", (e) => {
+                    if (e.target.classList.contains("ds-widget")) recomputeWidgetSection(container);
+                });
+            }
+        });
+
+        document.getElementById("btnAddClientStatusWise").addEventListener("click", function () {
+            const countChecked = document.getElementById("csw-count").checked;
+            const listChecked = document.getElementById("csw-list").checked;
+            if (!countChecked && !listChecked) {
+                alert("Please select Count or List.");
+                return;
+            }
+
+            const actionType = document.getElementById("csw-actiontype").value;
+            const action = document.getElementById("csw-action").value;
+            const startCode = document.getElementById("csw-startcode").value;
+
+            if (!action) {
+                alert("Please select an Action.");
+                return;
+            }
+            if (!startCode) {
+                alert("Please select a Start Code.");
+                return;
+            }
+
+            if (countChecked) {
+                addRow({ title: "Client Status Wise", type: "Count", action: action, actionType: actionType, actionValue: startCode, sourceSection: "ClientStatusWise" });
+            }
+            if (listChecked) {
+                addRow({ title: "Client Status Wise", type: "List", action: action, actionType: actionType, actionValue: startCode, sourceSection: "ClientStatusWise" });
+            }
+            render();
+        });
+
+        document.getElementById("btnAddClientManualStatusWise").addEventListener("click", function () {
+            const countChecked = document.getElementById("cmsw-count").checked;
+            const listChecked = document.getElementById("cmsw-list").checked;
+            if (!countChecked && !listChecked) {
+                alert("Please select Count or List.");
+                return;
+            }
+
+            const process = document.getElementById("cmsw-process").value;
+            const manualStatus = document.getElementById("cmsw-manualstatus").value;
+
+            if (!process) {
+                alert("Please select a Service Status Process.");
+                return;
+            }
+
+            if (countChecked) {
+                addRow({ title: "Client Manual Status Wise", type: "Count", action: process, actionType: "Service Manual Status", actionValue: manualStatus, sourceSection: "ClientManualStatusWise" });
+            }
+            if (listChecked) {
+                addRow({ title: "Client Manual Status Wise", type: "List", action: process, actionType: "Service Manual Status", actionValue: manualStatus, sourceSection: "ClientManualStatusWise" });
+            }
+            render();
+        });
+
+        document.getElementById("btnAddReceivedPayment").addEventListener("click", function () {
+            const branch = document.getElementById("rp-branch").value;
+            const metrics = Array.from(document.querySelectorAll(".rp-metric:checked")).map(el => el.value);
+
+            if (metrics.length === 0) {
+                alert("Please select at least one Received Payment option.");
+                return;
+            }
+
+            metrics.forEach(metric => {
+                const exists = state.some(r => r.title === "Received Payment" && r.action === metric && r.actionValue === branch);
+                if (!exists) {
+                    addRow({ title: "Received Payment", type: "List", action: metric, actionType: "Branch", actionValue: branch, sourceSection: "ReceivedPayment" });
+                }
+            });
+            render();
+        });
+
+        function syncCheckboxesFromLoadedState() {
+            document.querySelectorAll(".ds-section").forEach(container => {
+                const sectionId = container.dataset.section;
+                const sectionTitle = container.querySelector("h6")?.textContent.trim();
+
+                const rowsForSec = state.filter(r => r.sourceSection === sectionId || r.title === sectionTitle);
+                if (rowsForSec.length > 0) {
+                    const types = new Set(rowsForSec.map(r => (r.type || "").toLowerCase()));
+                    container.querySelectorAll(".ds-type").forEach(cb => {
+                        if (types.has(cb.value.toLowerCase())) cb.checked = true;
+                    });
+
+                    const actions = new Set(rowsForSec.map(r => r.action));
+                    container.querySelectorAll(".ds-metric, .ds-widget, .rp-metric").forEach(cb => {
+                        if (actions.has(cb.value)) cb.checked = true;
+                    });
+                }
+            });
+        }
+
+        try {
+            const rawJson = @Html.Raw(existingJson);
+            const existing = Array.isArray(rawJson) ? rawJson : (typeof rawJson === "string" ? JSON.parse(rawJson) : []);
+
+            if (existing && existing.length > 0) {
+                const savedUserType = existing[0].dashboardSettingsUserType || existing[0].DashboardSettingsUserType;
+                if (savedUserType === "Specific User Type") {
+                    document.getElementById("rdSpecificUserType").checked = true;
+                } else if (savedUserType === "Specific User") {
+                    document.getElementById("rdSpecificUser").checked = true;
+                }
+
+                existing.forEach(item => {
+                    const title = item.title || item.Title || "";
+                    const type = item.type || item.Type || "";
+                    const action = item.action || item.Action || "";
+                    const actionType = item.actionType || item.ActionType || "";
+                    const actionValue = item.actionValue || item.ActionValue || "";
+
+                    let sourceSection = "preloaded";
+                    document.querySelectorAll(".ds-section").forEach(sec => {
+                        if (sec.querySelector("h6")?.textContent.trim() === title) {
+                            sourceSection = sec.dataset.section;
+                        }
+                    });
+
+                    addRow({
+                        title: title,
+                        type: type,
+                        action: action,
+                        actionType: actionType,
+                        actionValue: actionValue,
+                        sourceSection: sourceSection
+                    });
+                });
+
+                syncCheckboxesFromLoadedState();
+                render();
+            }
+        } catch (e) {
+            console.error("Could not preload existing settings", e);
+        }
+
+        document.getElementById("dsForm").addEventListener("submit", function () {
+            const cleanState = state.map(r => ({
+                title: r.title,
+                type: r.type,
+                action: r.action,
+                actionType: r.actionType,
+                actionValue: r.actionValue
+            }));
+            document.getElementById("SettingsJson").value = JSON.stringify(cleanState);
+        });
+
+        @if (TempData["SaveMessage"] != null)
+        {
+                <text>
+                var saveModal = new bootstrap.Modal(document.getElementById('saveModal'));
+                saveModal.show();
+                </text>
+        }
+    </script>
+}

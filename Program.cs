@@ -42,16 +42,19 @@ namespace ActivitiesManagement
             builder.Services.AddScoped<BranchRepository>();
             builder.Services.AddScoped<SourceOfInquiryRepository>();
             builder.Services.AddScoped<SubSourceOfInquiryRepository>();
+            builder.Services.AddScoped<ISecondarySourceOfEnquiryRepository, SecondarySourceOfEnquiryRepository>();
             builder.Services.AddScoped<SecondarySourceOfEnquiryRepository>();
+            builder.Services.AddScoped<DashboardSettingsRepository>();
+            builder.Services.AddScoped<UserTypeRepository>();
             var app = builder.Build();
 
             if (!app.Environment.IsDevelopment())
             {
                 app.UseExceptionHandler("/Home/Error");
                 app.UseHsts();
+                app.UseHttpsRedirection();
             }
 
-            app.UseHttpsRedirection();
             app.UseStaticFiles();
 
             app.UseRouting();

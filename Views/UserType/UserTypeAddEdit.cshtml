@@ -1,0 +1,63 @@
+﻿@model ActivitiesManagement.Models.UserType
+@{
+    bool isEdit = Model.Id != 0;
+    ViewData["Title"] = isEdit ? "Edit User Type" : "Add User Type";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <div>
+        <h4 class="fw-bold mb-0">@(isEdit ? "EDIT" : "ADD") USER TYPE</h4>
+        <small class="text-muted">Dashboard / User Type / @(isEdit ? "Edit" : "Add") User Type</small>
+    </div>
+    <a asp-action="Index" class="btn btn-primary">BACK</a>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        @if (!ViewData.ModelState.IsValid)
+        {
+            <div class="alert alert-danger">@Html.ValidationSummary()</div>
+        }
+
+        <form asp-action="@(isEdit ? "UserTypeEdit" : "UserTypeInsert")" method="post">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="Id" value="@Model.Id" />
+
+            <div class="row">
+                <div class="col-md-5 mb-3">
+                    <label class="form-label">Title <span class="text-danger">*</span></label>
+                    <input type="text" name="Title" value="@Model.Title" class="form-control" placeholder="Enter Title" required />
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label class="form-label">Short Name <span class="text-danger">*</span></label>
+                    <input type="text" name="ShortName" value="@Model.ShortName" class="form-control" placeholder="Enter Short Name" required />
+                </div>
+                <div class="col-md-3 mb-3 d-flex align-items-end">
+                    <div class="form-check">
+                        <input type="checkbox" class="form-check-input" asp-for="IsShowAllRecord" />
+                        <label class="form-check-label" asp-for="IsShowAllRecord">Is Show All Record?</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Description</label>
+                <textarea name="Description" class="form-control" rows="3" placeholder="Enter Description">@Model.Description</textarea>
+            </div>
+
+           
+            @if (isEdit)
+            {
+                <button type="submit" class="btn btn-primary">Update</button>
+            }
+            else
+            {
+                <div class="d-flex gap-2">
+                    <button type="submit" name="action" value="save" class="btn btn-primary">Save</button>
+                    <button type="submit" name="action" value="saveAndAddAnother" class="btn btn-success">Save & Add Another</button>
+                    <a asp-action="Index" class="btn btn-danger">Cancel</a>
+                </div>
+            }
+        </form>
+    </div>
+</div>

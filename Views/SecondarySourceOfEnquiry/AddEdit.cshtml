@@ -1,4 +1,4 @@
-﻿@model ActivitiesManagement.Models.SecondarySourceOfEnquiry
+@model ActivitiesManagement.Models.SecondarySourceOfEnquiry
 @{
     bool isEdit = Model.Id != 0;
     ViewData["Title"] = isEdit ? "Edit Secondary Source of Enquiry" : "Add Secondary Source of Enquiry";
@@ -16,21 +16,28 @@
     <div class="card-body">
         <form asp-action="AddEdit" method="post">
             @Html.AntiForgeryToken()
-            <input type="hidden" name="Id" value="@Model.Id" />
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+            <input type="hidden" asp-for="Id" />
+            <input type="hidden" asp-for="StatusFlag" />
 
             <div class="mb-3">
-                <label class="form-label">Title <span class="text-danger">*</span></label>
-                <input type="text" name="Title" value="@Model.Title" class="form-control" placeholder="Enter Title" required />
+                <label class="form-label" asp-for="Title">Title <span class="text-danger">*</span></label>
+                <input type="text" asp-for="Title" class="form-control" placeholder="Enter Title" required />
+                <span asp-validation-for="Title" class="text-danger"></span>
             </div>
 
             <div class="mb-3">
-                <label class="form-label">Description</label>
-                <textarea name="Description" class="form-control" rows="4" placeholder="Enter Description">@Model.Description</textarea>
+                <label class="form-label" asp-for="Description">Description</label>
+                <textarea asp-for="Description" class="form-control" rows="4" placeholder="Enter Description"></textarea>
+                <span asp-validation-for="Description" class="text-danger"></span>
             </div>
 
             @if (isEdit)
             {
-                <button type="submit" class="btn btn-primary">Update</button>
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-primary">Update</button>
+                    <a asp-action="Index" class="btn btn-danger">Cancel</a>
+                </div>
             }
             else
             {
